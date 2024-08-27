@@ -1,0 +1,87 @@
+/* 引用文本样式 */
+body.misuzu2027.ref-text__brackets .protyle-wysiwyg [data-node-id] span[data-type*="block-ref"]:not([data-type="virtual-block-ref"]):not([data-type*="sup"]):not([data-type*="sub"]):not(.av__celltext--ref) {
+    font-weight: inherit;
+    background-color: transparent;
+    border-bottom: none;
+    color: var(--b3-theme-primary)
+}
+
+body.misuzu2027.ref-text__brackets .protyle-wysiwyg [data-node-id] span[data-type*="block-ref"]::before {
+    content: "[[";
+    color: var(--b3-theme-on-surface);
+    display: inline-block;
+    text-align: center;
+    margin: 0 0 0 0.125em;
+    padding: 0;
+    position: inherit;
+    font-size: 1em;
+}
+
+
+body.misuzu2027.ref-text__brackets .protyle-wysiwyg [data-node-id] span[data-type*="block-ref"]::after {
+    content: "]]";
+    color: var(--b3-theme-on-surface);
+    display: inline-block;
+    text-align: center;
+    margin: 0 0.125em 0 0;
+    padding: 0;
+    position: inherit;
+    font-size: 1em;
+}
+
+/* 块引用 静态*/
+body.misuzu2027.ref-text__brackets .protyle-wysiwyg [data-node-id] span[data-type*="block-ref"][data-subtype="s"]::before {
+    content: "[";
+}
+
+body.misuzu2027.ref-text__brackets .protyle-wysiwyg [data-node-id] span[data-type*="block-ref"][data-subtype="s"]::after {
+    content: "]";
+}
+
+
+
+/* ---------------------------start 代码块样式 start------------------------------*/
+/* ------------ 代码块限制最大高度 ------------ */
+/* 限制代码块高度，设置超过高度，出现滚动条 */
+body.misuzu2027.code-block__drag-height .protyle-wysiwyg .code-block .drag-bar {
+    position: absolute;
+    /* 距离容器底部的距离，可以根据需要调整 */
+    bottom: 0px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    /* 拖动条宽度，可以根据需要调整 */
+    height: 5px;
+    /* 拖动条高度，可以根据需要调整 */
+    background-color: var(--b3-theme-on-background);
+    /* 拖动条背景颜色 */
+    cursor: row-resize;
+    /* 圆角，可以根据需要调整 */
+    border-radius: 5px;
+    // caret-color: transparent;
+    user-select: none;
+}
+
+// body.misuzu2027.code-block__drag-height .protyle-wysiwyg .code-block .protyle-linenumber__rows {
+//     overflow: hidden;
+// }
+
+// body.misuzu2027.code-block__max-height .protyle-wysiwyg .code-block .protyle-linenumber__rows {
+//     overflow: hidden;
+// }
+
+/* ------------ 代码块折叠样式 ------------ */
+// body.misuzu2027 .protyle-wysiwyg .code-block span[misuzu2027-code-block-toggle] svg {
+//     display: none;
+// }
+
+// body.misuzu2027 .protyle-wysiwyg .code-block:not([fold="1"]) span[misuzu2027-code-block-toggle] svg.misuzu2027__svg_up {
+//     display: inline-block;
+// }
+
+// body.misuzu2027 .protyle-wysiwyg .code-block[fold="1"] span[misuzu2027-code-block-toggle] svg.misuzu2027__svg_down {
+
+//     display: inline-block;
+// }
+
+/* ---------------------------end 代码块样式 end------------------------------*/

@@ -1,0 +1,28 @@
+{
+  "name": "syplugin-misuzu-custom",
+  "author": "Misuzu2027",
+  "url": "https://github.com/Misuzu2027/syplugin-misuzu-custom",
+  "version": "0.0.1",
+  "minAppVersion": "3.0.14",
+  "backends": [
+   "all"
+  ],
+  "frontends": [
+    "all"
+  ],
+  "displayName": {
+    "en_US": "Misuzu",
+    "zh_CN": "Misuzu"
+  },
+  "description": {
+    "en_US": "个人使用插件",
+    "zh_CN": "个人使用插件"
+  },
+  "readme": {
+    "en_US": "README.md",
+    "zh_CN": "README_zh_CN.md"
+  },
+  "keywords": [
+    
+  ]
+}
