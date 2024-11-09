@@ -35,10 +35,11 @@ export function getSettingTabArray(): TabProperty[] {
             key: "code-block-setting", name: "代码块", iconKey: "iconLink", props: [
 
                 new ItemProperty({ key: "codeBlockNaming", type: "switch", name: "代码块命名", description: "", tips: "" }),
-                new ItemProperty({ key: "codeBlockMaxHeight", type: "number", name: "代码块最大高度", description: "", tips: "", min: 50 }),
-                // new ItemProperty({ key: "codeBlockToggle", type: "switch", name: "代码块显示折叠展开按钮", description: "", tips: "" }),
-                new ItemProperty({ key: "codeBlockAdjustHeight", type: "switch", name: "代码块调整高度", description: "如果设置了最大高度，拖拽范围也不会超过最大高度", tips: "" }),
                 new ItemProperty({ key: "codeBlockTopLanguages", type: "text", name: "代码块常用语言", description: "选择语言时，会把这些语言置顶显示，英文逗号或中文逗号隔开多个语言", tips: "" }),
+                new ItemProperty({ key: "codeBlockMaxHeight", type: "number", name: "代码块最大高度", description: "", tips: "", min: 150 }),
+                new ItemProperty({ key: "codeBlockAdjustHeight", type: "switch", name: "代码块调整高度", description: "如果设置了最大高度，拖拽范围也不会超过最大高度", tips: "" }),
+                new ItemProperty({ key: "codeBlockToggle", type: "switch", name: "代码块显示折叠展开按钮", description: "", tips: "" }),
+                new ItemProperty({ key: "codeBlockFoldHeight", type: "number", name: "代码块折叠后高度", description: "", tips: "", min: 150 }),
 
                 // new ItemProperty({ key: "queryAllContentUnderHeadline", type: "switch", name: "反链区域关键字查询标题下的所有内容", description: "必须开启 查询标题下关联定义块 才可生效。", tips: "" }),
 

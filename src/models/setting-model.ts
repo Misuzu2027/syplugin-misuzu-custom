@@ -9,6 +9,7 @@ export class SettingConfig {
     codeBlockTopLanguages: string;
     codeBlockNaming: boolean;
     codeBlockToggle: boolean;
+    codeBlockFoldHeight: number;
     codeBlockMaxHeight: number;
     codeBlockAdjustHeight: boolean;
 
