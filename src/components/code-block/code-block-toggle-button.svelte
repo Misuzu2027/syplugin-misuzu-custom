@@ -68,6 +68,10 @@
         if (isNaN(foldHeight) || foldHeight <= 150) {
             foldHeight = 150;
         }
+        if (hljsElement.scrollHeight < foldHeight) {
+            return;
+        }
+
         // blockExpand = hljsElement.clientHeight >= hljsElement.scrollHeight;
         if (blockExpand) {
             hljsElement.style.height = foldHeight + "px";

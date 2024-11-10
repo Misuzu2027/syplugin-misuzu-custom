@@ -12,6 +12,7 @@ export function getDefaultSettingConfig() {
     defaultConfig.codeBlockTopLanguages = "";
 
     defaultConfig.fileTreeKeywordFilter = false;
+    defaultConfig.fileTreeKeywordFilterWithMatchedSubDocs = false;
 
 
     return defaultConfig;
@@ -49,6 +50,7 @@ export function getSettingTabArray(): TabProperty[] {
         new TabProperty({
             key: "file-tree-setting", name: "文档树", iconKey: "iconPlugin", props: [
                 new ItemProperty({ key: "fileTreeKeywordFilter", type: "switch", name: "关键字过滤笔记本", description: "", tips: "" }),
+                new ItemProperty({ key: "fileTreeKeywordFilterWithMatchedSubDocs", type: "switch", name: "关键字过滤笔记本-匹配子文档", description: "", tips: "" }),
                 // new ItemProperty({ key: "documentBottomDisplay", type: "switch", name: "文档底部显示反链面板", description: "", tips: "" }),
                 // new ItemProperty({ key: "topBarDisplay", type: "switch", name: "桌面端顶栏创建反链页签 Icon", description: "", tips: "" }),
                 // new ItemProperty({ key: "cacheAfterResponseMs", type: "number", name: "启用缓存门槛（毫秒）", description: "当接口响应时间超过这个数，就会把这次查询结果存入缓存，-1 不开启缓存", tips: "", min: -1 }),

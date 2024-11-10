@@ -84,7 +84,7 @@ export async function highlightElementTextByCss(
         return;
     }
 
-    let searchResultsHighlight = CSS.highlights.get("search-result-mark");
+    let searchResultsHighlight = CSS.highlights.get("misuzu-custom-search-result-mark");
     if (searchResultsHighlight) {
         for (const range of allMatchRanges) {
             searchResultsHighlight.add(range);
@@ -94,13 +94,13 @@ export async function highlightElementTextByCss(
     }
 
     // Register the Highlight object in the registry.
-    CSS.highlights.set("search-result-mark", searchResultsHighlight);
+    CSS.highlights.set("misuzu-custom-search-result-mark", searchResultsHighlight);
 
 }
 
 export function clearCssHighlights() {
-    CSS.highlights.delete("search-result-mark");
-    CSS.highlights.delete("search-result-focus");
+    CSS.highlights.delete("misuzu-custom-search-result-mark");
+    CSS.highlights.delete("misuzu-custom-search-result-focus");
 }
 
 

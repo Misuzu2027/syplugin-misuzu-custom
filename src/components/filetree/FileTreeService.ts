@@ -1,4 +1,8 @@
 import { SettingService } from "@/service/SettingService";
+import { DocumentQueryCriteria, generateDocumentListSql } from "@/service/SqlService";
+import { sql } from "@/utils/api";
+import { isArrayNotEmpty } from "@/utils/array-util";
+import { clearCssHighlights, highlightContent, highlightElementTextByCss } from "@/utils/html-util";
 import Instance from "@/utils/Instance";
 import { containsAllKeywords, splitKeywordStringToArray } from "@/utils/string-util";
 
@@ -65,24 +69,49 @@ function initFileTreeSearchInput() {
 
     anchorElement.insertAdjacentElement('afterend', searchDivElement);
 
-    searchInputElement.addEventListener("input", (event: InputEvent) => {
-        console.log("searchInputElement input")
+    searchInputElement.addEventListener("input", async (event: InputEvent) => {
+        // console.log("searchInputElement input")
         if (event.isComposing) {
             return;
         }
         let searchKeyword = searchInputElement.value;
-        let keywordArray = splitKeywordStringToArray(searchKeyword);
+        let keywordArray = splitKeywordStringToArray(searchKeyword.toLowerCase());
+
+        let matchedSubDocs = SettingService.ins.SettingConfig.fileTreeKeywordFilterWithMatchedSubDocs;
+        let docFullTextSearch = false;
+        let includeConcatFields = ["content", "tag", "name", "alias", "memo"];
+
+        let validSubdocsNotebookId = []
+
+        if (matchedSubDocs && isArrayNotEmpty(keywordArray)) {
+            let queryCriteria: DocumentQueryCriteria = new DocumentQueryCriteria(
+                keywordArray, docFullTextSearch, null, null, null, null, includeConcatFields, null, null);
+
+            let queryDocListSql = generateDocumentListSql(queryCriteria)
+            let docBlockList: Block[] = await sql(queryDocListSql);
+            for (const docBlock of docBlockList) {
+                validSubdocsNotebookId.push(docBlock.box);
+            }
+        }
+        clearCssHighlights();
+
+
 
         let boxUlElementArray = fileTreeDocElement.querySelectorAll("ul[data-url].b3-list.b3-list--background");
         for (const ulElement of boxUlElementArray) {
+
             let boxNameElement = ulElement.querySelector("li.b3-list-item > span.b3-list-item__text")
-            let boxName = boxNameElement.textContent;
-            if (containsAllKeywords(boxName, keywordArray)) {
+            let boxName = boxNameElement.textContent.toLowerCase();
+            let boxId = ulElement.getAttribute("data-url");
+            if (containsAllKeywords(boxName, keywordArray) || validSubdocsNotebookId.includes(boxId)) {
+                highlightElementTextByCss(ulElement as HTMLElement, keywordArray)
+
                 ulElement.classList.remove("fn__none");
             } else {
                 ulElement.classList.add("fn__none");
             }
         }
+
 
 
     })

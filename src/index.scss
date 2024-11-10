@@ -1,3 +1,13 @@
+::highlight(misuzu-custom-search-result-mark) {
+    background-color: var(--b3-protyle-inline-mark-background);
+    color: var(--b3-protyle-inline-mark-color);
+}
+
+::highlight(misuzu-custom-search-result-focus) {
+    background-color: var(--b3-theme-primary-lighter);
+    color: var(--b3-protyle-inline-mark-color);
+}
+
 /* 引用文本样式 */
 body.misuzu2027.ref-text__brackets .protyle-wysiwyg [data-node-id] span[data-type*="block-ref"]:not([data-type="virtual-block-ref"]):not([data-type*="sup"]):not([data-type*="sub"]):not(.av__celltext--ref) {
     font-weight: inherit;

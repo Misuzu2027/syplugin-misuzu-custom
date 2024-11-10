@@ -15,6 +15,7 @@ export class SettingConfig {
 
     // 文档树
     fileTreeKeywordFilter: boolean;
+    fileTreeKeywordFilterWithMatchedSubDocs:boolean;
 
 
 }

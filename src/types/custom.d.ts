@@ -59,3 +59,23 @@ type IItemPropertyType =
     "switch" |
     "order" |
     "tips";
+
+type DocumentSortMethod =
+    | "modifiedAsc"
+    | "modifiedDesc"
+    | "createdAsc"
+    | "createdDesc"
+    | "rankAsc"
+    | "rankDesc"
+    | "refCountAsc"
+    | "refCountDesc"
+    | "alphabeticAsc"
+    | "alphabeticDesc"
+    ;
+
+type ContentBlockSortMethod =
+    | "type"
+    | "content"
+    | "typeAndContent"
+    | DocumentSortMethod
+    ;
