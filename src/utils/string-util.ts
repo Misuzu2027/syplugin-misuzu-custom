@@ -90,6 +90,23 @@ export function isValidStr(s: any): boolean {
     return true;
 }
 
+/**
+ * 判定字符串是否有效
+ * @param s 需要检查的字符串（或其他类型的内容）
+ * @returns true / false 是否为有效的字符串
+ */
+export function isStrNotBlank(s: any): boolean {
+    if (s == undefined || s == null || s === '') {
+        return false;
+    }
+    return true;
+}
+
+export function isStrBlank(s: any): boolean {
+    return !isStrNotBlank(s);
+}
+
+
 export function splitKeywordStringToArray(keywordStr: string): string[] {
     let keywordArray = [];
     if (!isValidStr(keywordStr)) {

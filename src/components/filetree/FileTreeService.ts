@@ -1,10 +1,10 @@
 import { SettingService } from "@/service/SettingService";
 import { DocumentQueryCriteria, generateDocumentListSql } from "@/service/SqlService";
 import { sql } from "@/utils/api";
-import { isArrayNotEmpty } from "@/utils/array-util";
-import { clearCssHighlights, highlightContent, highlightElementTextByCss } from "@/utils/html-util";
+import { isArrayEmpty, isArrayNotEmpty } from "@/utils/array-util";
+import { clearCssHighlights, highlightContent, highlightElementTextByCss, stringToElement } from "@/utils/html-util";
 import Instance from "@/utils/Instance";
-import { containsAllKeywords, splitKeywordStringToArray } from "@/utils/string-util";
+import { containsAllKeywords, isStrBlank, isValidStr, splitKeywordStringToArray } from "@/utils/string-util";
 
 export class FileTreeService {
     private intervalId;
@@ -36,9 +36,17 @@ export class FileTreeService {
         if (inputElement) {
             inputElement.remove();
         }
+        if (fileTreeObserve) {
+            fileTreeObserve.disconnect();
+        }
+        clearCssHighlights();
+        removeNotebookOrDocHide();
     }
 
 }
+let searchKeywordArray: string[] = [];
+let hideNotebookIdArray: string[] = [];
+let matchDocBlockArray: Block[] = [];
 
 function initFileTreeSearchInput() {
     let fileTreeDocElement = document.querySelector("#layouts  div.layout-tab-container div.file-tree.sy__file");
@@ -53,6 +61,7 @@ function initFileTreeSearchInput() {
     if (!anchorElement) {
         return;
     }
+    let fileTreeUlParentDivElement = fileTreeDocElement.querySelector(":scope > div.fn__flex-1") as HTMLElement;
     let searchDivElement = document.createElement("div");
     searchDivElement.style.margin = "1px 8px";
     searchDivElement.classList.add("misuzu2027__search-div", "misuzu2027__copy", "misuzu2027__protyle-custom");
@@ -64,7 +73,13 @@ function initFileTreeSearchInput() {
     // searchClearElement.setAttribute("style", `right: 8px; height: 42px;`);
     // searchClearElement.innerHTML = `<use xlink:href="#iconCloseRound"></use>`
 
+    let clearElement = stringToElement(`
+    <svg class="b3-form__icon-clear ariaLabel" aria-label="${window.siyuan.languages.clear}" style="right: 18px;height: 30px;">
+<use xlink:href="#iconCloseRound"></use></svg>
+`)
+
     searchDivElement.append(searchInputElement);
+    searchDivElement.append(clearElement);
     // searchDivElement.append(searchClearElement);
 
     anchorElement.insertAdjacentElement('afterend', searchDivElement);
@@ -75,50 +90,136 @@ function initFileTreeSearchInput() {
             return;
         }
         let searchKeyword = searchInputElement.value;
-        let keywordArray = splitKeywordStringToArray(searchKeyword.toLowerCase());
+        searchKeywordArray = splitKeywordStringToArray(searchKeyword.toLowerCase());
 
         let matchedSubDocs = SettingService.ins.SettingConfig.fileTreeKeywordFilterWithMatchedSubDocs;
         let docFullTextSearch = false;
         let includeConcatFields = ["content", "tag", "name", "alias", "memo"];
 
-        let validSubdocsNotebookId = []
+        hideNotebookIdArray = [];
+        matchDocBlockArray = [];
 
-        if (matchedSubDocs && isArrayNotEmpty(keywordArray)) {
+        if (matchedSubDocs && isArrayNotEmpty(searchKeywordArray)) {
             let queryCriteria: DocumentQueryCriteria = new DocumentQueryCriteria(
-                keywordArray, docFullTextSearch, null, null, null, null, includeConcatFields, null, null);
+                searchKeywordArray, docFullTextSearch, null, null, null, null, includeConcatFields, null, null);
 
             let queryDocListSql = generateDocumentListSql(queryCriteria)
-            let docBlockList: Block[] = await sql(queryDocListSql);
-            for (const docBlock of docBlockList) {
-                validSubdocsNotebookId.push(docBlock.box);
-            }
+            matchDocBlockArray = await sql(queryDocListSql);
         }
         clearCssHighlights();
 
-
-
         let boxUlElementArray = fileTreeDocElement.querySelectorAll("ul[data-url].b3-list.b3-list--background");
         for (const ulElement of boxUlElementArray) {
-
             let boxNameElement = ulElement.querySelector("li.b3-list-item > span.b3-list-item__text")
             let boxName = boxNameElement.textContent.toLowerCase();
             let boxId = ulElement.getAttribute("data-url");
-            if (containsAllKeywords(boxName, keywordArray) || validSubdocsNotebookId.includes(boxId)) {
-                highlightElementTextByCss(ulElement as HTMLElement, keywordArray)
-
-                ulElement.classList.remove("fn__none");
-            } else {
-                ulElement.classList.add("fn__none");
+            if (!containsAllKeywords(boxName, searchKeywordArray)) {
+                hideNotebookIdArray.push(boxId)
             }
         }
+        for (const docBlock of matchDocBlockArray) {
+            hideNotebookIdArray = hideNotebookIdArray.filter(value => value !== docBlock.box);
+        }
 
-
+        refreshNotebookOrDoc(fileTreeDocElement as HTMLElement);
 
     })
 
+
+    clearElement.addEventListener("click", (event) => {
+        searchInputElement.value = '';
+        searchInputElement.dispatchEvent(new Event('input'));
+        clearCssHighlights();
+        removeNotebookOrDocHide();
+    })
+    observeFileTreeChildChanges(fileTreeUlParentDivElement);
+}
+let fileTreeObserve: MutationObserver;
+
+function observeFileTreeChildChanges(targetElement: HTMLElement) {
+    // 创建一个 MutationObserver 实例
+    fileTreeObserve = new MutationObserver((mutationsList, observer) => {
+        // 检查是否有子元素发生变化
+        mutationsList.forEach(mutation => {
+            // if (isArrayEmpty(validDocBlockList)) {
+            //     return;
+            // }
+            // 如果不是子元素发生变化时
+            if (mutation.type !== 'childList') {
+                return;
+            }
+            // 获取添加的节点
+            const addedNodes = Array.from(mutation.addedNodes);
+            for (const addNode of addedNodes) {
+                if (!(addNode instanceof HTMLElement)) {
+                    continue
+                }
+                refreshNotebookOrDoc(addNode);
+            }
+
+        });
+    });
+
+    // 配置 MutationObserver 来监听子元素的变化
+    const config = { childList: true, subtree: true }; // subtree: true 用于监听所有后代节点的变化
+
+    // 开始观察
+    fileTreeObserve.observe(targetElement, config);
+
 }
 
+function refreshNotebookOrDoc(parentElement: HTMLElement) {
 
+    console.log("hideNotebookIdArray ", hideNotebookIdArray, "matchDocBlockArray ", matchDocBlockArray, " keywords ", searchKeywordArray)
+    // 查询笔记本节点，然后隐藏
+    let boxUlElementArray = parentElement.querySelectorAll("ul[data-url].b3-list.b3-list--background");
+    for (const ulElement of boxUlElementArray) {
+        let boxId = ulElement.getAttribute("data-url");
+        if (hideNotebookIdArray.includes(boxId)) {
+            ulElement.classList.add("fn__none");
+        } else {
+            ulElement.classList.remove("fn__none");
+        }
+    }
+    // 查询文档节点，然后隐藏
+    let liNodeList = parentElement.querySelectorAll(`li[data-type="navigation-file"]`);
+    for (const liNode of liNodeList) {
+        let rootId = liNode.getAttribute("data-node-id");
+        let hide = false;
+        for (const docBlock of matchDocBlockArray) {
+            if (docBlock.path.includes(rootId)) {
+                hide = false;
+                break;
+            } else {
+                hide = true;
+            }
+        }
+        if (hide) {
+            liNode.classList.add("fn__none");
+        } else {
+            liNode.classList.remove("fn__none");
+        }
+    }
+
+    highlightElementTextByCss(parentElement as HTMLElement, searchKeywordArray)
+
+}
+
+function removeNotebookOrDocHide() {
+    let fileTreeDocElement = document.querySelector("#layouts  div.layout-tab-container div.file-tree.sy__file");
+    if (!fileTreeDocElement) {
+        return;
+    }
+    let boxUlElementArray = fileTreeDocElement.querySelectorAll("ul[data-url].b3-list.b3-list--background.fn__none");
+    for (const ulElement of boxUlElementArray) {
+        ulElement.classList.remove("fn__none");
+    }
+    let liNodeList = fileTreeDocElement.querySelectorAll(`li[data-type="navigation-file"].fn__none`);
+    for (const liNode of liNodeList) {
+        liNode.classList.remove("fn__none");
+    }
+
+}
 
 // let lastNoteBookMap;
 // function initFileTreeElement() {
