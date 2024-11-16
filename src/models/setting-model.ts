@@ -15,8 +15,11 @@ export class SettingConfig {
 
     // 文档树
     fileTreeKeywordFilter: boolean;
-    fileTreeKeywordFilterWithMatchedSubDocs:boolean;
+    fileTreeKeywordFilterWithMatchedSubDocs: boolean;
+    fileTreeMiddleClickToggle: boolean;
 
+    // 图片
+    imageMiddleClickResizeWidth: string;
 
 }
 

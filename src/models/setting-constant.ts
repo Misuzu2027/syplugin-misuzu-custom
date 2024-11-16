@@ -14,6 +14,10 @@ export function getDefaultSettingConfig() {
 
     defaultConfig.fileTreeKeywordFilter = false;
     defaultConfig.fileTreeKeywordFilterWithMatchedSubDocs = false;
+    defaultConfig.fileTreeMiddleClickToggle = false;
+
+    defaultConfig.imageMiddleClickResizeWidth = null;
+
 
 
     return defaultConfig;
@@ -53,6 +57,20 @@ export function getSettingTabArray(): TabProperty[] {
             key: "file-tree-setting", name: i18n.FileTree, iconKey: "iconPlugin", props: [
                 new ItemProperty({ key: "fileTreeKeywordFilter", type: "switch", name: i18n.KeywordFilterNotebooks, description: "", tips: "" }),
                 new ItemProperty({ key: "fileTreeKeywordFilterWithMatchedSubDocs", type: "switch", name: i18n.KeywordFilterNotebooksMatchSubdocuments, description: "", tips: "" }),
+                new ItemProperty({ key: "fileTreeMiddleClickToggle", type: "switch", name: i18n.MiddleClickToggleDocTree, description: "", tips: "" }),
+
+                // new ItemProperty({ key: "documentBottomDisplay", type: "switch", name: "文档底部显示反链面板", description: "", tips: "" }),
+                // new ItemProperty({ key: "topBarDisplay", type: "switch", name: "桌面端顶栏创建反链页签 Icon", description: "", tips: "" }),
+                // new ItemProperty({ key: "cacheAfterResponseMs", type: "number", name: "启用缓存门槛（毫秒）", description: "当接口响应时间超过这个数，就会把这次查询结果存入缓存，-1 不开启缓存", tips: "", min: -1 }),
+                // new ItemProperty({ key: "cacheExpirationTime", type: "number", name: "缓存过期时间（秒）", description: "", tips: "缓存数据失效时间", min: -1, }),
+                // new ConfigProperty({ key: "usePraentIdIdx", type: "switch", name: "使用索引", description: "", tips: "" }),
+
+            ]
+        }),
+        new TabProperty({
+            key: "image-setting", name: i18n.Image, iconKey: "iconPlugin", props: [
+                new ItemProperty({ key: "imageMiddleClickResizeWidth", type: "number", name: i18n.MiddleClickResizeImageWidth, description: "需要加上单位，例：200px。px:固定宽度；vw:视窗的比例。", tips: "" }),
+
                 // new ItemProperty({ key: "documentBottomDisplay", type: "switch", name: "文档底部显示反链面板", description: "", tips: "" }),
                 // new ItemProperty({ key: "topBarDisplay", type: "switch", name: "桌面端顶栏创建反链页签 Icon", description: "", tips: "" }),
                 // new ItemProperty({ key: "cacheAfterResponseMs", type: "number", name: "启用缓存门槛（毫秒）", description: "当接口响应时间超过这个数，就会把这次查询结果存入缓存，-1 不开启缓存", tips: "", min: -1 }),

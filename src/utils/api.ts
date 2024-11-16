@@ -15,7 +15,7 @@ async function request(url: string, data: any) {
     let response: IWebSocketData = await fetchSyncPost(url, data);
     let res = response.code === 0 ? response.data : null;
     if (response.code != 0) {
-        console.log(`反链面板插件接口异常 url : ${url} , msg : ${response.msg}`)
+        console.log(`Misuzu 插件接口异常 url : ${url} , msg : ${response.msg}`)
     }
     return res;
 }

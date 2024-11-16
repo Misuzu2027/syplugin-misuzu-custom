@@ -1,4 +1,5 @@
 import { isArrayEmpty } from "./array-util";
+import { isStrBlank } from "./string-util";
 
 export const escapeAttr = (html: string) => {
     return html.replace(/"/g, "&quot;").replace(/'/g, "&apos;");
@@ -266,4 +267,69 @@ export function stringToElement(htmlString): Element {
 
     // 返回解析后的文档的根元素
     return doc.body.firstChild as Element;
+}
+
+
+
+export function hasClosestByTagName(element: HTMLElement | null, tagName: string): HTMLElement | false {
+    if (!element || isStrBlank(tagName)) {
+        return false;
+    }
+    // 检查传入的元素是否存在，并且是否是标签名
+    if (element && element.tagName == tagName.toUpperCase()) {
+        return element;
+    }
+
+    // 如果没有找到，检查父级元素
+    while (element && element.parentElement && element.tagName !== "BODY") {
+        element = element.parentElement;
+        if (element.classList.contains(tagName)) {
+            return element;
+        }
+    }
+
+    return false;
+}
+
+
+
+export function hasClosestByClassName(element: HTMLElement | null, className: string): HTMLElement | false {
+    if (!element || isStrBlank(className)) {
+        return false;
+    }
+    // 检查传入的元素是否存在，并且是否具有指定的类名
+    if (element && element.classList.contains(className)) {
+        return element;
+    }
+
+    // 如果没有找到，检查父级元素
+    while (element && element.parentElement && element.tagName !== "BODY") {
+        element = element.parentElement;
+        if (element.classList.contains(className)) {
+            return element;
+        }
+    }
+
+    return false;
+}
+
+
+export function hasClosestById(element: HTMLElement | null, id: string): HTMLElement | false {
+    if (!element || isStrBlank(id)) {
+        return false;
+    }
+    // 检查传入的元素是否存在，并且是否具有指定的类名
+    if (element && element.id == id) {
+        return element;
+    }
+
+    // 如果没有找到，检查父级元素
+    while (element && element.parentElement && element.tagName !== "BODY") {
+        element = element.parentElement;
+        if (element.id == id) {
+            return element;
+        }
+    }
+
+    return false;
 }

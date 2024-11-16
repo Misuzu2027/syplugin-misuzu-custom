@@ -11,6 +11,7 @@ import { openSettingsDialog } from "./components/setting/setting-util";
 import { CssService } from "./service/CssService";
 import { CodeBlockService } from "./components/code-block/CodeBlockService";
 import { FileTreeService } from "./components/filetree/FileTreeService";
+import { ImageScalingService } from "./components/img/ImageScalingService";
 
 
 export default class PluginSample extends Plugin {
@@ -23,6 +24,7 @@ export default class PluginSample extends Plugin {
         CssService.ins.init();
         CodeBlockService.ins.init();
         FileTreeService.ins.init();
+        ImageScalingService.ins.init();
 
         // 图标的制作参见帮助文档
         for (const key in CUSTOM_ICON_MAP) {

@@ -13,6 +13,8 @@
     "CollapsedCodeBlockHeight": "代码块折叠后高度",
     "FileTree":"文档树",
     "KeywordFilterNotebooks": "关键字过滤笔记本",
-    "KeywordFilterNotebooksMatchSubdocuments": "关键字过滤笔记本-匹配子文档"
-
+    "KeywordFilterNotebooksMatchSubdocuments": "关键字过滤笔记本-匹配子文档",
+    "MiddleClickToggleDocTree":"中键展开/折叠笔记本或文档",
+    "Image":"图片",
+    "MiddleClickResizeImageWidth":"中键图片缩放宽度"
 }

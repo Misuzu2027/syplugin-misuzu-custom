@@ -11,8 +11,10 @@
     "AdjustCodeBlockHeightTips": "If the maximum height is set, the drag range will not exceed it.",
     "DisplayCollapseExpandCodeBlockButton": "Display Collapse/Expand Button for Code Block",
     "CollapsedCodeBlockHeight": "Collapsed Code Block Height",
-    "FileTree":"Doc Tree",
+    "FileTree": "Doc Tree",
     "KeywordFilterNotebooks": "Keyword Filter for Notebooks",
-    "KeywordFilterNotebooksMatchSubdocuments": "Keyword Filter for Notebooks - Match Subdocuments"
-
+    "KeywordFilterNotebooksMatchSubdocuments": "Keyword Filter for Notebooks - Match Subdocuments",
+    "MiddleClickToggleDocTree": "Middle-click to expand/collapse notebooks or documents",
+    "Image": "Image",
+    "MiddleClickResizeImageWidth": "Middle-click to resize image width"
 }

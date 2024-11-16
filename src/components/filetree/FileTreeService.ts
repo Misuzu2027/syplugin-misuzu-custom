@@ -7,7 +7,8 @@ import Instance from "@/utils/Instance";
 import { containsAllKeywords, isStrBlank, isValidStr, splitKeywordStringToArray } from "@/utils/string-util";
 
 export class FileTreeService {
-    private intervalId;
+    private intervalInitFileTreeSearchInputId;
+    private intervalInitFileTreeMiddleClickToggleId;
 
 
     public static get ins(): FileTreeService {
@@ -20,16 +21,31 @@ export class FileTreeService {
 
         if (fileTreeKeywordFilter) {
             initFileTreeSearchInput();
-            this.intervalId = setInterval(initFileTreeSearchInput, 1000)
+            this.intervalInitFileTreeSearchInputId = setInterval(initFileTreeSearchInput, 2000)
         } else {
-            this.destroy();
+            this.destoryFileTreeKeywordFilter();
         }
+        let fileTreeMiddleClickToggle = SettingService.ins.SettingConfig.fileTreeMiddleClickToggle;
+        if (fileTreeMiddleClickToggle) {
+            addFileTreeMiddleClickToggle();
+            this.intervalInitFileTreeMiddleClickToggleId = setInterval(addFileTreeMiddleClickToggle, 2000)
+        } else {
+            this.destoryFileTreeMiddleClickToggle();
+        }
+
+
+
     }
 
     public destroy() {
-        if (this.intervalId) {
-            clearInterval(this.intervalId);
-            this.intervalId = null;
+        this.destoryFileTreeKeywordFilter();
+        this.destoryFileTreeMiddleClickToggle();
+    }
+
+    public destoryFileTreeKeywordFilter() {
+        if (this.intervalInitFileTreeSearchInputId) {
+            clearInterval(this.intervalInitFileTreeSearchInputId);
+            this.intervalInitFileTreeSearchInputId = null;
         }
 
         let inputElement = document.querySelector("div.file-tree.sy__file div.misuzu2027__search-div");
@@ -42,6 +58,15 @@ export class FileTreeService {
         clearCssHighlights();
         removeNotebookOrDocHide();
     }
+
+    public destoryFileTreeMiddleClickToggle() {
+        document.querySelector('.sy__file').removeEventListener('mousedown', handleDocToggle);
+        if (this.intervalInitFileTreeMiddleClickToggleId) {
+            clearInterval(this.intervalInitFileTreeMiddleClickToggleId);
+            this.intervalInitFileTreeMiddleClickToggleId = null;
+        }
+    }
+
 
 }
 let searchKeywordArray: string[] = [];
@@ -221,51 +246,45 @@ function removeNotebookOrDocHide() {
 
 }
 
-// let lastNoteBookMap;
-// function initFileTreeElement() {
-//     let fileTreeElement = document.querySelector("#layouts  div.layout-tab-container div.file-tree.sy__file > div.fn__flex-1");
-//     if (!fileTreeElement) {
-//         return
-//     }
-//     let notebookMap = getNotebookMap();
-//     if (areMapsEqual(lastNoteBookMap, notebookMap)) {
-//         return;
-//     }
-//     lastNoteBookMap = notebookMap;
-//     console.log(`FileTreeService notebookMap `, notebookMap)
-//     let boxGroupElement = document.createElement("div");
-//     boxGroupElement.classList.add("b3-list", "b3-list--background");
-//     boxGroupElement.innerHTML = `
-// <div class="b3-list-item b3-list-item--hide-action" style="margin:1px 0px">
-//     <span class="b3-list-item__toggle b3-list-item__arrow--open">
-//         <svg class="b3-list-item__arrow"><use xlink:href="#iconRight"></use></svg>
-//     </span>
-//     <span class="b3-list-item__icon b3-tooltips b3-tooltips__e">🗃</span>
-//     <span class="b3-list-item__text" style="font-weight: bold;">测试文档分组</span>
-// </div>
-//     `;
 
+function addFileTreeMiddleClickToggle() {
+    let fileTreeDocElement = document.querySelector("#layouts  div.layout-tab-container div.file-tree.sy__file");
+    if (!fileTreeDocElement) {
+        return;
+    }
+    FileTreeService.ins.destoryFileTreeMiddleClickToggle();
 
-//     let boxUlElement = fileTreeElement.querySelector(`ul[data-url="${notebookMap.keys().next().value}"].b3-list.b3-list--background`);
+    document.querySelector('.sy__file').addEventListener('mousedown', handleDocToggle);
+}
 
-//     boxUlElement.before(boxGroupElement);
-//     boxGroupElement.append(boxUlElement);
-//     boxGroupElement.style.margin = "1px 0px"
-// }
+function handleDocToggle(event: MouseEvent) {
+    if (event.button != 1) return;
+    let clickTarget = event.target as HTMLElement;
+    let fileTreeMiddleClickToggle = SettingService.ins.SettingConfig.fileTreeMiddleClickToggle;
+    if (!fileTreeMiddleClickToggle) {
+        return;
+    }
 
+    let liElement = clickTarget.parentElement;
+    let temp = event.target as HTMLElement;
+    for (let i = 0; i < 4 && temp; i++) {
+        if (temp?.getAttribute("data-type") == "navigation-file"
+            || temp?.getAttribute("data-type") == "navigation-root") {
+            liElement = temp;
+            break;
+        }
+        temp = temp?.parentElement;
+    }
 
-// function getNotebookMap(): Map<string, string> {
-//     let fileTreeElement = document.querySelector("#layouts  div.layout-tab-container div.file-tree.sy__file > div.fn__flex-1");
-//     let idNameMap = new Map<string, string>();
-//     let boxUlElementArray = fileTreeElement.querySelectorAll("ul[data-url].b3-list.b3-list--background");
-//     for (const ulElement of boxUlElementArray) {
-//         let boxId = ulElement.getAttribute("data-url");
-//         let boxNameElement = ulElement.querySelector("li.b3-list-item > span.b3-list-item__text")
-//         let boxName = boxNameElement.textContent;
-//         if (isValidStr(boxId) && isValidStr(boxName)) {
-//             idNameMap.set(boxId, boxName);
-//         }
-//     }
-
-//     return idNameMap;
-// }
+    if (liElement?.getAttribute("data-type") == "navigation-file"
+        || liElement?.getAttribute("data-type") == "navigation-root") {
+        const b3ListItemToggleElement = liElement.querySelector('.b3-list-item__toggle') as HTMLElement;
+        const titleElement = liElement.querySelector('.b3-list-item__text') as HTMLElement;
+        if (b3ListItemToggleElement.classList.contains('fn__hidden')) return;
+        event.preventDefault();
+        b3ListItemToggleElement.click();
+        if (event.ctrlKey) {
+            titleElement.click();
+        }
+    }
+}
