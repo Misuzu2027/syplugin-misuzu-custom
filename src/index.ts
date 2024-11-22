@@ -34,15 +34,15 @@ export default class PluginSample extends Plugin {
             }
         }
 
-        this.eventBus.on('switch-protyle', (e: any) => {
-            EnvConfig.ins.lastViewedDocId = e.detail.protyle.block.rootID;
-        })
-        this.eventBus.on('loaded-protyle-static', (e: any) => {
-            // console.log("index loaded-protyle-static ")
-            if (EnvConfig.ins.isMobile && !EnvConfig.ins.lastViewedDocId) {
-                EnvConfig.ins.lastViewedDocId = e.detail.protyle.block.rootID;
-            }
-        })
+        // this.eventBus.on('switch-protyle', (e: any) => {
+        //     EnvConfig.ins.lastViewedDocId = e.detail.protyle.block.rootID;
+        // })
+        // this.eventBus.on('loaded-protyle-static', (e: any) => {
+        //     // console.log("index loaded-protyle-static ")
+        //     if (EnvConfig.ins.isMobile && !EnvConfig.ins.lastViewedDocId) {
+        //         EnvConfig.ins.lastViewedDocId = e.detail.protyle.block.rootID;
+        //     }
+        // })
     }
 
 

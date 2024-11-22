@@ -20,6 +20,8 @@ export class SettingConfig {
 
     // 图片
     imageMiddleClickResizeWidth: string;
+    topBarShowImageZoomBtn: boolean;
+    
 
 }
 

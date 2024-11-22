@@ -7,6 +7,7 @@ import { mergeObjects } from "@/utils/object-util";
 import { CssService } from "./CssService";
 import { CodeBlockService } from "@/components/code-block/CodeBlockService";
 import { FileTreeService } from "@/components/filetree/FileTreeService";
+import { ImageScalingService } from "@/components/img/ImageScalingService";
 
 const SettingFileName = 'misuzu2027-setting.json';
 
@@ -68,13 +69,14 @@ export class SettingService {
         this._settingConfig = { ...settingConfigParam };
         this.initFunction();
         plugin.saveData(SettingFileName, paramJson);
-        
+
     }
 
-    public initFunction(){
+    public initFunction() {
         CssService.ins.init();
         CodeBlockService.ins.init();
         FileTreeService.ins.init();
+        ImageScalingService.ins.init();
     }
 
 }

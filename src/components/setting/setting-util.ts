@@ -8,7 +8,7 @@ import SettingPageSvelte from "@/components/setting/setting-page.svelte"
 export function openSettingsDialog() {
     let isMobile = EnvConfig.ins.isMobile;
     // 生成Dialog内容
-    const dialogId = "backlink-panel-setting-" + Date.now();
+    const dialogId = "misuzu2027-setting-" + Date.now();
     // 创建dialog
     const settingDialog = new Dialog({
         title: EnvConfig.ins.i18n.PluginSettings,

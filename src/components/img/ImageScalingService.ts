@@ -1,10 +1,11 @@
 
 import { EnvConfig } from "@/config/EnvConfig";
 import { SettingService } from "@/service/SettingService";
-import { hasClosestByTagName } from "@/utils/html-util";
+import { hasClosestByTagName, isPixelOrViewportWidth } from "@/utils/html-util";
 import Instance from "@/utils/Instance";
-import { getActiveTab } from "@/utils/siyuan-util";
-import { containsAllKeywords, splitKeywordStringToArray } from "@/utils/string-util";
+import { confirmDialog, getActiveTab } from "@/utils/siyuan-util";
+import { showMessage } from "siyuan";
+import { isStrBlank } from "@/utils/string-util";
 
 export class ImageScalingService {
 
@@ -13,27 +14,47 @@ export class ImageScalingService {
         return Instance.get(ImageScalingService);
     }
 
+    private topBarElement: HTMLElement;
+
     public init() {
         this.initEventListener();
-        // todo
 
-        // EnvConfig.ins.plugin.addTopBar({
-        //     icon: CUSTOM_ICON_MAP.BacklinkPanelFilter.id,
-        //     title: "缩放当前文档所有加载图片的宽度",
-        //     position: "right",
-        //     callback: () => {
-        //         let currentDocument: HTMLDivElement = getActiveTab();
-        //         if (!currentDocument) {
-        //             return;
-        //         }
+        let showTopBar = SettingService.ins.SettingConfig.topBarShowImageZoomBtn;
+        if (showTopBar) {
+            this.topBarElement = EnvConfig.ins.plugin.addTopBar({
+                icon: "iconContract",
+                title: EnvConfig.ins.plugin.i18n.ZoomWidthLoadedImagesCurrentDocument,
+                position: "right",
+                callback: () => {
+                    let currentDocument: HTMLDivElement = getActiveTab();
+                    if (!currentDocument) {
+                        return;
+                    }
 
-        //         const docTitleElement = currentDocument.querySelector(".protyle-title");
-        //         let docTitle = currentDocument.querySelector("div.protyle-title__input").textContent;
-        //         let docId = docTitleElement.getAttribute("data-node-id");
-        //         TabService.ins.openBacklinkTab(docTitle, docId, null);
-        //     }
-        // });
+                    const widthInput = document.createElement("input");
+                    widthInput.className = "b3-text-field fn__block";
 
+                    confirmDialog(EnvConfig.ins.plugin.i18n.ZoomWidthLoadedImagesCurrentDocument
+                        , widthInput, (): boolean => {
+                            return batchUpdateCurDocImageWidth(widthInput.value);
+                        });
+                }
+            });
+        } else {
+            if (this.topBarElement) {
+                let topBarElements = EnvConfig.ins.plugin.topBarIcons;
+                for (let i = 0; i < topBarElements.length; i++) {
+                    if (topBarElements[i].id === this.topBarElement.id) {
+                        this.topBarElement.remove();
+
+                        topBarElements.splice(i, 1); // 删除当前元素
+                        i--; // 调整索引以避免跳过下一个元素
+                        break;
+                    }
+                }
+            }
+
+        }
     }
 
     public destroy() {
@@ -41,56 +62,75 @@ export class ImageScalingService {
     }
 
     public initEventListener() {
-        document.body.addEventListener('mousedown', function (event: MouseEvent) {
-            if (event.button != 1) return;
-            // 图片宽度，目前思源只支持 px,vw。
-            let imageWidthValue = SettingService.ins.SettingConfig.imageMiddleClickResizeWidth;;
-            if (!imageWidthValue) {
-                return;
-            }
-            let clickElement = event.target as HTMLElement;
-            // 检查点击的元素是否是图片
-            if (!clickElement.matches('.protyle-wysiwyg div[data-node-id] span.img[data-type="img"] img')) {
-                return;
-            }
-            let imageSpanElement = clickElement.parentElement.parentElement;
-            // 如果图片在表格中，也不进行设置
-            if (imageSpanElement.parentElement.tagName.toLowerCase() === "td") {
-                // return;
-            }
-            let layoutTabContainerElement = clickElement.parentElement;
+        let classFlag = "misuzu2027__image_zoom_mousedown";
+        if (document.body.matches(`.${classFlag}`)) {
+            return;
+        }
+        document.body.classList.add("misuzu2027__image_zoom_mousedown")
+        document.body.addEventListener('mousedown', handleImageZoomMousedown);
+    }
 
-            // // 循环查找当前点击的文档元素
-            while (layoutTabContainerElement) {
-                if (layoutTabContainerElement.tagName.toLowerCase() === 'div'
-                    && layoutTabContainerElement.classList.contains('protyle')
-                    && layoutTabContainerElement.classList.contains('fn__flex-1')) {
-                    break;
-                }
-                layoutTabContainerElement = layoutTabContainerElement.parentElement;
-            }
-            // 默认只读模式
-            let isReadonly = true;
-            if (layoutTabContainerElement) {
-                let readonlyButton = layoutTabContainerElement.querySelector('[data-type="readonly"]');
-                if (readonlyButton) {
-                    isReadonly = readonlyButton.querySelector("use").getAttribute("xlink:href") !== "#iconUnlock";
-                }
-            }
-            if (isReadonly) {
-                console.log("点击自动设置图片宽度失败！当前是只读模式。图片地址：" + clickElement.getAttribute("src"));
-                return;
-            }
-            zoomImageWith(event, imageWidthValue)
-        });
+}
+
+function handleImageZoomMousedown(event: MouseEvent) {
+
+    if (event.button != 1) return;
+    let imageWidthValue = SettingService.ins.SettingConfig.imageMiddleClickResizeWidth;
+    if (isStrBlank(imageWidthValue)) {
+        // showImageFaileMessage("宽度为空");
+        return;
+    }
+    let clickElement = event.target as HTMLElement;
+    // 检查点击的元素是否是图片
+    if (!clickElement.matches('.protyle-wysiwyg div[data-node-id] span.img[data-type="img"] img')) {
+        return;
+    }
+    let imageSpanElement = clickElement.parentElement.parentElement;
+    // 如果图片在表格中，也不进行设置
+    if (imageSpanElement.parentElement.tagName.toLowerCase() === "td") {
+        // return;
+    }
+    let layoutTabContainerElement = clickElement.parentElement;
+
+    // 图片宽度，目前思源只支持 px,vw。
+    if (!isPixelOrViewportWidth(imageWidthValue)) {
+        showImageFaileMessage("宽度格式不正确");
+        return;
+    }
+
+    // // 循环查找当前点击的文档元素
+    while (layoutTabContainerElement) {
+        if (layoutTabContainerElement.tagName.toLowerCase() === 'div'
+            && layoutTabContainerElement.classList.contains('protyle')
+            && layoutTabContainerElement.classList.contains('fn__flex-1')) {
+            break;
+        }
+        layoutTabContainerElement = layoutTabContainerElement.parentElement;
+    }
+    // 默认只读模式
+    let isReadonly = true;
+    if (layoutTabContainerElement) {
+        let readonlyButton = layoutTabContainerElement.querySelector('[data-type="readonly"]');
+        if (readonlyButton) {
+            isReadonly = readonlyButton.querySelector("use").getAttribute("xlink:href") !== "#iconUnlock";
+        }
+    }
+    if (isReadonly) {
+        console.log("点击自动设置图片宽度失败！当前是只读模式。图片地址：" + clickElement.getAttribute("src"));
+        event.preventDefault();
+        return;
+    }
+    let flag = zoomImageWith(event.target as HTMLElement, imageWidthValue);
+    if (flag) {
+        event.preventDefault();
     }
 
 }
 
 
-function zoomImageWith(event: MouseEvent, width: string) {
-    let target = event.target as HTMLElement;
 
+
+function zoomImageWith(target: HTMLElement, width: string): boolean {
     // 创建一个 mousedown 事件
     const mouseDownEvent = new MouseEvent('mousedown', {
         bubbles: true, // 事件是否冒泡
@@ -113,10 +153,9 @@ function zoomImageWith(event: MouseEvent, width: string) {
         return;
     }
     dragElement.dispatchEvent(mouseDownEvent);
-    event.preventDefault();
     imgElement.style.width = width;
-
     dragElement.dispatchEvent(mouseUpEvent);
+    return true;
 }
 
 function zoomImageWithMiddleClick() {
@@ -227,4 +266,51 @@ function zoomImageWithMiddleClick() {
 
     });
 
+}
+
+
+function batchUpdateCurDocImageWidth(width: string): boolean {
+    if (isStrBlank(width)) {
+        showImageFaileMessage("宽度为空");
+        return;
+    }
+    if (!isPixelOrViewportWidth(width)) {
+        showImageFaileMessage("宽度格式不正确");
+        return;
+    }
+    let currentDocument: HTMLDivElement = getActiveTab();
+    if (!currentDocument) {
+        showImageFaileMessage("没找到打开的文档");
+        return;
+    }
+    // 默认只读模式
+    let isReadonly = true;
+    let readonlyButton = currentDocument.querySelector('[data-type="readonly"]');
+    if (readonlyButton) {
+        isReadonly = readonlyButton.querySelector("use").getAttribute("xlink:href") !== "#iconUnlock";
+    }
+    if (isReadonly) {
+        showImageFaileMessage("当前文档为只读模式");
+        return;
+    }
+
+    let imageElementList = currentDocument.querySelectorAll(`.protyle-wysiwyg div[data-node-id] span.img[data-type="img"] img`);
+    for (let element of imageElementList) {
+
+        let hasTable = hasClosestByTagName(element as HTMLElement, "TD");
+        // 如果图片在表格中，也不进行设置
+        if (hasTable) {
+            continue;
+        }
+        zoomImageWith(element as HTMLElement, width);
+    }
+    return true;
+}
+
+function showImageFaileMessage(reason: string) {
+    showMessage(
+        `批量设置当前文档图片宽度失败 : ${reason}!`,
+        4000,
+        "info",
+    );
 }

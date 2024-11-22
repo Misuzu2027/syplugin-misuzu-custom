@@ -17,6 +17,7 @@ export function getDefaultSettingConfig() {
     defaultConfig.fileTreeMiddleClickToggle = false;
 
     defaultConfig.imageMiddleClickResizeWidth = null;
+    defaultConfig.topBarShowImageZoomBtn = false;
 
 
 
@@ -69,7 +70,8 @@ export function getSettingTabArray(): TabProperty[] {
         }),
         new TabProperty({
             key: "image-setting", name: i18n.Image, iconKey: "iconPlugin", props: [
-                new ItemProperty({ key: "imageMiddleClickResizeWidth", type: "number", name: i18n.MiddleClickResizeImageWidth, description: "需要加上单位，例：200px。px:固定宽度；vw:视窗的比例。", tips: "" }),
+                new ItemProperty({ key: "imageMiddleClickResizeWidth", type: "text", name: i18n.MiddleClickResizeImageWidth, description: i18n.MiddleClickResizeImageWidthDesc, tips: "" }),
+                new ItemProperty({ key: "topBarShowImageZoomBtn", type: "switch", name: i18n.ShowTopBatchZoomBtn, description: "", tips: "" }),
 
                 // new ItemProperty({ key: "documentBottomDisplay", type: "switch", name: "文档底部显示反链面板", description: "", tips: "" }),
                 // new ItemProperty({ key: "topBarDisplay", type: "switch", name: "桌面端顶栏创建反链页签 Icon", description: "", tips: "" }),

@@ -333,3 +333,8 @@ export function hasClosestById(element: HTMLElement | null, id: string): HTMLEle
 
     return false;
 }
+
+export function isPixelOrViewportWidth(str: string): boolean {
+    const regex = /^\d+(?:\.\d+)?(px|vw)$/;
+    return regex.test(str);
+}

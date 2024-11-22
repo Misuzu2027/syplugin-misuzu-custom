@@ -16,5 +16,8 @@
     "KeywordFilterNotebooksMatchSubdocuments": "Keyword Filter for Notebooks - Match Subdocuments",
     "MiddleClickToggleDocTree": "Middle-click to expand/collapse notebooks or documents",
     "Image": "Image",
-    "MiddleClickResizeImageWidth": "Middle-click to resize image width"
+    "MiddleClickResizeImageWidth": "Middle-click to resize image width",
+    "MiddleClickResizeImageWidthDesc":"Units are required. Example: 200px. px: fixed width; vw: viewport percentage.",
+    "ZoomWidthLoadedImagesCurrentDocument": "Zoom the width of loaded images in the current document",
+    "ShowTopBatchZoomBtn": "Show a batch image zoom button at the top"
 }
