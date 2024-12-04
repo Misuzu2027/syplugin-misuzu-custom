@@ -1,5 +1,5 @@
 import { isArrayEmpty } from "./array-util";
-import { isStrBlank } from "./string-util";
+import { isStrBlank, isStrNotBlank } from "./string-util";
 
 export const escapeAttr = (html: string) => {
     return html.replace(/"/g, "&quot;").replace(/'/g, "&apos;");
@@ -275,15 +275,16 @@ export function hasClosestByTagName(element: HTMLElement | null, tagName: string
     if (!element || isStrBlank(tagName)) {
         return false;
     }
+    let tagNameUpper = tagName.toUpperCase();
     // 检查传入的元素是否存在，并且是否是标签名
-    if (element && element.tagName == tagName.toUpperCase()) {
+    if (element && element.tagName == tagNameUpper) {
         return element;
     }
 
     // 如果没有找到，检查父级元素
     while (element && element.parentElement && element.tagName !== "BODY") {
         element = element.parentElement;
-        if (element.classList.contains(tagName)) {
+        if (element.tagName == tagNameUpper) {
             return element;
         }
     }
@@ -293,13 +294,19 @@ export function hasClosestByTagName(element: HTMLElement | null, tagName: string
 
 
 
-export function hasClosestByClassName(element: HTMLElement | null, className: string): HTMLElement | false {
+export function hasClosestByClassName(element: HTMLElement | null, className: string, tagName?: string): HTMLElement | false {
     if (!element || isStrBlank(className)) {
         return false;
     }
     // 检查传入的元素是否存在，并且是否具有指定的类名
-    if (element && element.classList.contains(className)) {
-        return element;
+    if (element
+        && element.classList.contains(className)
+    ) {
+        if (isStrBlank(tagName)) {
+            return element;
+        } else if (element.tagName == tagName.toUpperCase()) {
+            return element;
+        }
     }
 
     // 如果没有找到，检查父级元素
@@ -335,6 +342,12 @@ export function hasClosestById(element: HTMLElement | null, id: string): HTMLEle
 }
 
 export function isPixelOrViewportWidth(str: string): boolean {
-    const regex = /^\d+(?:\.\d+)?(px|vw)$/;
+    const regex = /^\d+(?:\.\d+)?(px|vw|%)$/;
+    return regex.test(str);
+}
+
+
+export function isPxOrPercentWidth(str: string): boolean {
+    const regex = /^\d+(?:\.\d+)?(px|%)$/;
     return regex.test(str);
 }

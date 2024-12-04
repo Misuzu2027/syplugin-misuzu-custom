@@ -17,7 +17,7 @@
     "MiddleClickToggleDocTree":"中键展开/折叠笔记本或文档",
     "Image":"图片",
     "MiddleClickResizeImageWidth":"中键图片缩放宽度",
-    "MiddleClickResizeImageWidthDesc":"需要加上单位，例：200px。px:固定宽度；vw:视窗的比例。",
+    "MiddleClickResizeImageWidthDesc":"需要加上单位，例：200px，px:固定宽度；25%，%:视窗的比例。",
     "ZoomWidthLoadedImagesCurrentDocument":"缩放当前文档已加载图片的宽度",
     "ShowTopBatchZoomBtn":"顶部显示批量缩放图片按钮"
 }

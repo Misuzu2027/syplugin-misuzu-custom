@@ -17,7 +17,7 @@
     "MiddleClickToggleDocTree": "Middle-click to expand/collapse notebooks or documents",
     "Image": "Image",
     "MiddleClickResizeImageWidth": "Middle-click to resize image width",
-    "MiddleClickResizeImageWidthDesc":"Units are required. Example: 200px. px: fixed width; vw: viewport percentage.",
+    "MiddleClickResizeImageWidthDesc":"Units are required. Example: 200px, px: fixed width; 25%, %: viewport percentage.",
     "ZoomWidthLoadedImagesCurrentDocument": "Zoom the width of loaded images in the current document",
     "ShowTopBatchZoomBtn": "Show a batch image zoom button at the top"
 }
