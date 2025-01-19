@@ -99,7 +99,7 @@ function initFileTreeSearchInput() {
     // searchClearElement.innerHTML = `<use xlink:href="#iconCloseRound"></use>`
 
     let clearElement = stringToElement(`
-    <svg class="b3-form__icon-clear ariaLabel" aria-label="${window.siyuan.languages.clear}" style="right: 18px;height: 30px;">
+    <svg class="b3-form__icon-clear ariaLabel fn__none" aria-label="${window.siyuan.languages.clear}" style="right: 18px;height: 30px;">
 <use xlink:href="#iconCloseRound"></use></svg>
 `)
 
@@ -115,6 +115,11 @@ function initFileTreeSearchInput() {
             return;
         }
         let searchKeyword = searchInputElement.value;
+        if (searchKeyword.length == 0) {
+            clearElement.classList.add("fn__none");
+        } else {
+            clearElement.classList.remove("fn__none");
+        }
         searchKeywordArray = splitKeywordStringToArray(searchKeyword.toLowerCase());
 
         let matchedSubDocs = SettingService.ins.SettingConfig.fileTreeKeywordFilterWithMatchedSubDocs;

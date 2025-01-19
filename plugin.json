@@ -2,7 +2,7 @@
   "name": "syplugin-misuzu-custom",
   "author": "Misuzu2027",
   "url": "https://github.com/Misuzu2027/syplugin-misuzu-custom",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "minAppVersion": "3.0.14",
   "backends": [
    "all"

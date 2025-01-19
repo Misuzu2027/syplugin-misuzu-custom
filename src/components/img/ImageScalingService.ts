@@ -1,7 +1,7 @@
 
 import { EnvConfig } from "@/config/EnvConfig";
 import { SettingService } from "@/service/SettingService";
-import { hasClosestByClassName, hasClosestByTagName, isPixelOrViewportWidth, isPxOrPercentWidth } from "@/utils/html-util";
+import { hasClosestByClassName, hasClosestByTagName, isPxOrPercentWidth } from "@/utils/html-util";
 import Instance from "@/utils/Instance";
 import { confirmDialog, getActiveTab } from "@/utils/siyuan-util";
 import { showMessage } from "siyuan";
@@ -30,8 +30,6 @@ export class ImageScalingService {
                     if (!currentDocument) {
                         return;
                     }
-
-
 
                     let divElement = document.createElement("div");
                     const tipSpan = document.createElement("p");
@@ -104,7 +102,10 @@ function handleImageZoomMousedown(event: MouseEvent) {
     let layoutTabContainerElement = clickElement.parentElement;
 
     // 图片宽度，目前思源只支持 px,vw。
-    if (!isPxOrPercentWidth(imageWidthValue)) {
+    if (!isPxOrPercentWidth(imageWidthValue)
+        && !imageWidthValue.startsWith("-")
+        && !imageWidthValue.startsWith("calc")
+    ) {
         showImageFaileMessage("宽度格式不正确");
         event.preventDefault();
         return;
@@ -143,8 +144,11 @@ function handleImageZoomMousedown(event: MouseEvent) {
 
 
 function zoomImageWith(target: HTMLElement, width: string): boolean {
-    if (!target || isStrBlank(width)) {
+    if (!target) {
         return;
+    }
+    if (width && width.startsWith("-")) {
+        width = null;
     }
     // 创建一个 mousedown 事件
     const mouseDownEvent = new MouseEvent('mousedown', {
@@ -174,7 +178,11 @@ function zoomImageWith(target: HTMLElement, width: string): boolean {
     }
 
     dragElement.dispatchEvent(mouseDownEvent);
-    imgParentSpanElement.style.width = width;
+    if (width) {
+        imgParentSpanElement.style.width = width;
+    } else {
+        imgParentSpanElement.style.removeProperty('width');
+    }
     dragElement.dispatchEvent(mouseUpEvent);
     return true;
 }
@@ -295,7 +303,9 @@ function batchUpdateCurDocImageWidth(width: string): boolean {
         showImageFaileMessage("宽度为空");
         return;
     }
-    if (!isPxOrPercentWidth(width)) {
+    if (!isPxOrPercentWidth(width)
+        && !width.startsWith("-")
+        && !width.startsWith("calc")) {
         showImageFaileMessage("宽度格式不正确");
         return;
     }
