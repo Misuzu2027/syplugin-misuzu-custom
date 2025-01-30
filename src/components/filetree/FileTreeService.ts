@@ -259,7 +259,7 @@ function addFileTreeMiddleClickToggle() {
     }
     FileTreeService.ins.destoryFileTreeMiddleClickToggle();
 
-    document.querySelector('.sy__file').addEventListener('mousedown', handleDocToggle);
+    document.querySelector('.sy__file').addEventListener('mousedown', handleDocToggle, true);
 }
 
 function handleDocToggle(event: MouseEvent) {
@@ -288,6 +288,9 @@ function handleDocToggle(event: MouseEvent) {
         if (b3ListItemToggleElement.classList.contains('fn__hidden')) return;
         event.preventDefault();
         b3ListItemToggleElement.click();
+        if (window.siyuan.config.fileTree.openFilesUseCurrentTab) {
+            event.stopPropagation();
+        }
         if (event.ctrlKey) {
             titleElement.click();
         }
