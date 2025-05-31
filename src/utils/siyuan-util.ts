@@ -1,3 +1,4 @@
+import { getDockByType } from "@/libs/siyuan/layout/tabUtil";
 import { Dialog, getFrontend } from "siyuan";
 
 export function getActiveTab(): HTMLDivElement {
@@ -79,3 +80,23 @@ export const confirmDialog = (title: string,
     });
 };
 
+
+
+/**
+ * 
+ * @param notebookId 
+ * @param path ：protyle.path；“/20250510102251-6k93743.sy”
+ */
+export const fileTreeSelectDoc = (notebookId: string, path: string) => {
+
+    const dockFile = getDockByType("file");
+    if (!dockFile) {
+        return;
+    }
+    const files = dockFile.data.file;
+    if (!files) {
+        return;
+    }
+    files.selectItem(notebookId, path);
+    dockFile.toggleModel("file", true);
+}

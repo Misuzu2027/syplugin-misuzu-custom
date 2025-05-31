@@ -4,6 +4,7 @@ import { sql } from "@/utils/api";
 import { isArrayEmpty, isArrayNotEmpty } from "@/utils/array-util";
 import { clearCssHighlights, highlightContent, highlightElementTextByCss, stringToElement } from "@/utils/html-util";
 import Instance from "@/utils/Instance";
+import { fileTreeSelectDoc } from "@/utils/siyuan-util";
 import { containsAllKeywords, isStrBlank, isValidStr, splitKeywordStringToArray } from "@/utils/string-util";
 
 export class FileTreeService {
@@ -109,6 +110,25 @@ function initFileTreeSearchInput() {
 
     anchorElement.insertAdjacentElement('afterend', searchDivElement);
 
+    searchInputElement.addEventListener("keydown", async (event: KeyboardEvent) => {
+        let keydownKey = event.key;
+        if (event.ctrlKey && keydownKey == "ArrowUp") {
+            let collapseIcon = fileTreeDocElement.querySelector(`span[data-type="collapse"]`) as HTMLElement;
+            if (collapseIcon) {
+                collapseIcon.click();
+            }
+        }
+        if (event.key === "Enter") {
+            if (isArrayEmpty(matchDocBlockArray)) {
+                return;
+            }
+            for (let index = matchDocBlockArray.length - 1; index >= 0; index--) {
+                const docBlock = matchDocBlockArray[index];
+                fileTreeSelectDoc(docBlock.box, docBlock.path);
+            } 
+        }
+    })
+
     searchInputElement.addEventListener("input", async (event: InputEvent) => {
         // console.log("searchInputElement input")
         if (event.isComposing) {
@@ -200,7 +220,7 @@ function observeFileTreeChildChanges(targetElement: HTMLElement) {
 
 function refreshNotebookOrDoc(parentElement: HTMLElement) {
 
-    console.log("hideNotebookIdArray ", hideNotebookIdArray, "matchDocBlockArray ", matchDocBlockArray, " keywords ", searchKeywordArray)
+
     // 查询笔记本节点，然后隐藏
     let boxUlElementArray = parentElement.querySelectorAll("ul[data-url].b3-list.b3-list--background");
     for (const ulElement of boxUlElementArray) {
