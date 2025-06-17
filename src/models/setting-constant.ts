@@ -1,5 +1,4 @@
 import { EnvConfig } from "@/config/EnvConfig";
-import { BACKLINK_BLOCK_SORT_METHOD_ELEMENT, CUR_DOC_DEF_BLOCK_SORT_METHOD_ELEMENT, RELATED_DEF_BLOCK_SORT_METHOD_ELEMENT, RELATED_DOCMUMENT_SORT_METHOD_ELEMENT } from "./backlink-constant";
 import { ItemProperty, IOption, TabProperty, SettingConfig } from "./setting-model";
 
 export function getDefaultSettingConfig() {
@@ -19,7 +18,7 @@ export function getDefaultSettingConfig() {
     defaultConfig.imageMiddleClickResizeWidth = null;
     defaultConfig.topBarShowImageZoomBtn = false;
 
-
+    defaultConfig.protyleWysiwygMiddleClickToggle = false;
 
     return defaultConfig;
 }
@@ -81,48 +80,19 @@ export function getSettingTabArray(): TabProperty[] {
 
             ]
         }),
+        new TabProperty({
+            key: "protyle-setting", name: i18n.Image, iconKey: "iconPlugin", props: [
+                new ItemProperty({ key: "protyleWysiwygMiddleClickToggle", type: "switch", name: i18n.MiddleClickToggleProtyleTitleOrList, description: "", tips: "" }),
+
+                // new ItemProperty({ key: "documentBottomDisplay", type: "switch", name: "文档底部显示反链面板", description: "", tips: "" }),
+                // new ItemProperty({ key: "topBarDisplay", type: "switch", name: "桌面端顶栏创建反链页签 Icon", description: "", tips: "" }),
+                // new ItemProperty({ key: "cacheAfterResponseMs", type: "number", name: "启用缓存门槛（毫秒）", description: "当接口响应时间超过这个数，就会把这次查询结果存入缓存，-1 不开启缓存", tips: "", min: -1 }),
+                // new ItemProperty({ key: "cacheExpirationTime", type: "number", name: "缓存过期时间（秒）", description: "", tips: "缓存数据失效时间", min: -1, }),
+                // new ConfigProperty({ key: "usePraentIdIdx", type: "switch", name: "使用索引", description: "", tips: "" }),
+
+            ]
+        }),
     );
 
     return tabProperties;
-}
-
-function getBacklinkBlockSortMethodOptions(): IOption[] {
-    let backlinkBlockSortMethodElements = BACKLINK_BLOCK_SORT_METHOD_ELEMENT();
-    let options: IOption[] = [];
-    for (const element of backlinkBlockSortMethodElements) {
-        options.push(element);
-    }
-
-    return options;
-}
-
-
-function geturDocDefBlockSortMethodElement(): IOption[] {
-    let backlinkBlockSortMethodElements = CUR_DOC_DEF_BLOCK_SORT_METHOD_ELEMENT();
-    let options: IOption[] = [];
-    for (const element of backlinkBlockSortMethodElements) {
-        options.push(element);
-    }
-
-    return options;
-}
-
-function getRelatedDefBlockSortMethodElement(): IOption[] {
-    let backlinkBlockSortMethodElements = RELATED_DEF_BLOCK_SORT_METHOD_ELEMENT();
-    let options: IOption[] = [];
-    for (const element of backlinkBlockSortMethodElements) {
-        options.push(element);
-    }
-
-    return options;
-}
-
-function getRelatedDocmumentSortMethodElement(): IOption[] {
-    let backlinkBlockSortMethodElements = RELATED_DOCMUMENT_SORT_METHOD_ELEMENT();
-    let options: IOption[] = [];
-    for (const element of backlinkBlockSortMethodElements) {
-        options.push(element);
-    }
-
-    return options;
 }

@@ -270,7 +270,7 @@ function removeNotebookOrDocHide() {
     }
 
 }
-
+ 
 
 function addFileTreeMiddleClickToggle() {
     let fileTreeDocElement = document.querySelector("#layouts  div.layout-tab-container div.file-tree.sy__file");

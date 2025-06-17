@@ -12,9 +12,10 @@ import { CssService } from "./service/CssService";
 import { CodeBlockService } from "./components/code-block/CodeBlockService";
 import { FileTreeService } from "./components/filetree/FileTreeService";
 import { ImageScalingService } from "./components/img/ImageScalingService";
+import { ProtyleWysiwygService } from "./components/protyle-wysiwyg/ProtyleWysiwyg";
 
 
-export default class PluginSample extends Plugin {
+export default class Misuzu2027Plugin extends Plugin {
 
 
 
@@ -25,6 +26,8 @@ export default class PluginSample extends Plugin {
         CodeBlockService.ins.init();
         FileTreeService.ins.init();
         ImageScalingService.ins.init();
+        ProtyleWysiwygService.ins.init();
+
 
         // 图标的制作参见帮助文档
         for (const key in CUSTOM_ICON_MAP) {
@@ -34,19 +37,7 @@ export default class PluginSample extends Plugin {
             }
         }
 
-        // this.eventBus.on('switch-protyle', (e: any) => {
-        //     EnvConfig.ins.lastViewedDocId = e.detail.protyle.block.rootID;
-        // })
-        // this.eventBus.on('loaded-protyle-static', (e: any) => {
-        //     // console.log("index loaded-protyle-static ")
-        //     if (EnvConfig.ins.isMobile && !EnvConfig.ins.lastViewedDocId) {
-        //         EnvConfig.ins.lastViewedDocId = e.detail.protyle.block.rootID;
-        //     }
-        // })
     }
-
-
-
 
     onLayoutReady() {
 
@@ -60,7 +51,6 @@ export default class PluginSample extends Plugin {
     uninstall() {
         CodeBlockService.ins.destroy();
         FileTreeService.ins.destroy();
-        // console.log("uninstall");
     }
 
 

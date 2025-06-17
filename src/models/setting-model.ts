@@ -21,7 +21,10 @@ export class SettingConfig {
     // 图片
     imageMiddleClickResizeWidth: string;
     topBarShowImageZoomBtn: boolean;
-    
+
+    // 编辑器相关
+    protyleWysiwygMiddleClickToggle: boolean;
+
 
 }
 

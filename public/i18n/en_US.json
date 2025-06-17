@@ -19,5 +19,6 @@
     "MiddleClickResizeImageWidth": "Middle-click to resize image width",
     "MiddleClickResizeImageWidthDesc":"Units are required. Example: 200px, px: fixed width; 25%, %: viewport percentage.",
     "ZoomWidthLoadedImagesCurrentDocument": "Zoom the width of loaded images in the current document",
-    "ShowTopBatchZoomBtn": "Show a batch image zoom button at the top"
+    "ShowTopBatchZoomBtn": "Show a batch image zoom button at the top",
+    "MiddleClickToggleProtyleTitleOrList": "Middle-click to zoom titles or lists in the editor"
 }
