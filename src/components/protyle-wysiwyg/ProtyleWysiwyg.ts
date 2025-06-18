@@ -64,21 +64,22 @@ function handletoggleTitleOrListMousedown(event: MouseEvent) {
         return;
     }
     const target = event.target as HTMLElement;
-    const headingEl = target.closest('[data-type="NodeHeading"]');
+    // const headingEl = target.closest('[data-type="NodeHeading"]');
 
 
-    if (headingEl) {
-        let fold = headingEl.getAttribute("fold");
-        if (fold == "1") {
-            headingEl.removeAttribute("fold");
-            event.stopPropagation();
-            event.preventDefault();
-        } else {
-            headingEl.setAttribute("fold", "1");
-            event.stopPropagation();
-            event.preventDefault();
-        }
-    }
+    // 标题折叠需要调用 transactions 接口
+    // if (headingEl) {
+    //     let fold = headingEl.getAttribute("fold");
+    //     if (fold == "1") {
+    //         headingEl.removeAttribute("fold");
+    //         event.stopPropagation();
+    //         event.preventDefault();
+    //     } else {
+    //         headingEl.setAttribute("fold", "1");
+    //         event.stopPropagation();
+    //         event.preventDefault();
+    //     }
+    // }
 
     const listEl = target.closest('[data-type="NodeListItem"]');
     if (listEl) {

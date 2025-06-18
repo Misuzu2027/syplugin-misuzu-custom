@@ -81,8 +81,8 @@ export function getSettingTabArray(): TabProperty[] {
             ]
         }),
         new TabProperty({
-            key: "protyle-setting", name: i18n.Image, iconKey: "iconPlugin", props: [
-                new ItemProperty({ key: "protyleWysiwygMiddleClickToggle", type: "switch", name: i18n.MiddleClickToggleProtyleTitleOrList, description: "", tips: "" }),
+            key: "protyle-setting", name: i18n.DocumentEditingRelated, iconKey: "iconPlugin", props: [
+                new ItemProperty({ key: "protyleWysiwygMiddleClickToggle", type: "switch", name: i18n.MiddleClickToggleProtyleTitleOrList, description: i18n.MiddleClickToggleProtyleTitleOrListDesc, tips: "" }),
 
                 // new ItemProperty({ key: "documentBottomDisplay", type: "switch", name: "文档底部显示反链面板", description: "", tips: "" }),
                 // new ItemProperty({ key: "topBarDisplay", type: "switch", name: "桌面端顶栏创建反链页签 Icon", description: "", tips: "" }),
