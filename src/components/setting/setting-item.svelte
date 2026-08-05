@@ -1,16 +1,67 @@
-<script lang="ts" setup>
+<script lang="ts">
     import { ItemProperty } from "@/models/setting-model";
 
     export let itemProperty: ItemProperty;
+    /** Stack the control below the label (used by wide multi-select chips). */
+    export let column = false;
 </script>
 
-<div class="fn__flex b3-label config__item">
-    <div class="fn__flex-1 fn__flex-center">
-        {itemProperty.name}
-        <div class="b3-label__text">
-            {@html itemProperty.description}
-        </div>
+<div class="mz-setting-item" class:mz-setting-item--col={column}>
+    <div class="mz-setting-item__label">
+        <div class="mz-setting-item__title">{itemProperty.name}</div>
+        {#if itemProperty.description}
+            <div class="mz-setting-item__desc">
+                {@html itemProperty.description}
+            </div>
+        {/if}
     </div>
-    <div class="fn__space"></div>
-    <slot />
+    <div class="mz-setting-item__control">
+        <slot />
+    </div>
 </div>
+
+<style lang="scss">
+    .mz-setting-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--b3-border-color);
+    }
+
+    .mz-setting-item:last-child {
+        border-bottom: none;
+    }
+
+    .mz-setting-item--col {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .mz-setting-item__label {
+        min-width: 0;
+    }
+
+    .mz-setting-item__title {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--b3-theme-primary);
+    }
+
+    .mz-setting-item__desc {
+        font-size: 12px;
+        color: var(--b3-theme-on-surface-light);
+        margin-top: 3px;
+        line-height: 1.5;
+    }
+
+    .mz-setting-item--col .mz-setting-item__control {
+        width: 100%;
+    }
+
+    .mz-setting-item__control {
+        flex-shrink: 0;
+    }
+</style>

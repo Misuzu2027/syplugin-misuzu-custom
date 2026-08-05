@@ -22,5 +22,15 @@
     "ShowTopBatchZoomBtn": "顶部显示批量缩放图片按钮",
     "DocumentEditingRelated": "文档编辑相关",
     "MiddleClickToggleProtyleTitleOrList": "Ctrl+中键缩放编辑器中的标题或列表",
-    "MiddleClickToggleProtyleTitleOrListDesc": "只是修改当前样式，刷新后会恢复原样"
+    "MiddleClickToggleProtyleTitleOrListDesc": "只是修改当前样式，刷新后会恢复原样",
+    "Dock": "侧栏",
+    "HideDockIcons": "隐藏侧栏图标",
+    "HideDockIconsDesc": "勾选后隐藏对应内置侧栏图标，并关闭已打开的面板",
+    "DockIconOutline": "大纲",
+    "DockIconInbox": "收集箱",
+    "DockIconBookmark": "书签",
+    "DockIconTag": "标签",
+    "DockIconGraph": "关系图",
+    "DockIconGlobalGraph": "全局关系图",
+    "DockIconBacklink": "反向链接"
 }

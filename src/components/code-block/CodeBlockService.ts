@@ -49,27 +49,26 @@ export class CodeBlockService {
 
 function initBusEvent() {
     let settingConfig = SettingService.ins.SettingConfig;
+    const plugin = EnvConfig.ins.plugin;
+    // 始终先解绑，关闭相关设置后不会残留监听
+    plugin.eventBus.off("loaded-protyle-static", handleLoadedProtyle);
+    plugin.eventBus.off("loaded-protyle-dynamic", handleLoadedProtyle);
+    plugin.eventBus.off("ws-main", handlewsMain);
+
     if (settingConfig.codeBlockTopLanguages
         || settingConfig.codeBlockNaming
         || settingConfig.codeBlockMaxHeight
         || settingConfig.codeBlockAdjustHeight
     ) {
-
-        EnvConfig.ins.plugin.eventBus.off("loaded-protyle-static", handleLoadedProtyle);
-        EnvConfig.ins.plugin.eventBus.off("loaded-protyle-dynamic", handleLoadedProtyle);
-
-        EnvConfig.ins.plugin.eventBus.on("loaded-protyle-static", handleLoadedProtyle);
-        EnvConfig.ins.plugin.eventBus.on("loaded-protyle-dynamic", handleLoadedProtyle);
-
+        plugin.eventBus.on("loaded-protyle-static", handleLoadedProtyle);
+        plugin.eventBus.on("loaded-protyle-dynamic", handleLoadedProtyle);
     }
 
     if (settingConfig.codeBlockNaming
         || settingConfig.codeBlockMaxHeight
         || settingConfig.codeBlockAdjustHeight
     ) {
-        EnvConfig.ins.plugin.eventBus.off("ws-main", handlewsMain);
-
-        EnvConfig.ins.plugin.eventBus.on("ws-main", handlewsMain);
+        plugin.eventBus.on("ws-main", handlewsMain);
     }
 }
 

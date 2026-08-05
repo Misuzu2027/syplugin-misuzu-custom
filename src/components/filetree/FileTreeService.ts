@@ -17,25 +17,26 @@ export class FileTreeService {
     }
 
     public init() {
-
         let fileTreeKeywordFilter = SettingService.ins.SettingConfig.fileTreeKeywordFilter;
-
         if (fileTreeKeywordFilter) {
             initFileTreeSearchInput();
-            this.intervalInitFileTreeSearchInputId = setInterval(initFileTreeSearchInput, 2000)
+            // 设置变更会反复 init：已有定时器则不重复创建，避免 interval 叠加
+            if (!this.intervalInitFileTreeSearchInputId) {
+                this.intervalInitFileTreeSearchInputId = setInterval(initFileTreeSearchInput, 2000);
+            }
         } else {
             this.destoryFileTreeKeywordFilter();
         }
+
         let fileTreeMiddleClickToggle = SettingService.ins.SettingConfig.fileTreeMiddleClickToggle;
         if (fileTreeMiddleClickToggle) {
-            addFileTreeMiddleClickToggle();
-            this.intervalInitFileTreeMiddleClickToggleId = setInterval(addFileTreeMiddleClickToggle, 2000)
+            ensureFileTreeMiddleClickToggle();
+            if (!this.intervalInitFileTreeMiddleClickToggleId) {
+                this.intervalInitFileTreeMiddleClickToggleId = setInterval(ensureFileTreeMiddleClickToggle, 2000);
+            }
         } else {
             this.destoryFileTreeMiddleClickToggle();
         }
-
-
-
     }
 
     public destroy() {
@@ -55,13 +56,19 @@ export class FileTreeService {
         }
         if (fileTreeObserve) {
             fileTreeObserve.disconnect();
+            fileTreeObserve = null;
         }
         clearCssHighlights();
         removeNotebookOrDocHide();
     }
 
     public destoryFileTreeMiddleClickToggle() {
-        document.querySelector('.sy__file').removeEventListener('mousedown', handleDocToggle);
+        const fileTree = document.querySelector(".sy__file");
+        if (fileTree && fileTreeMiddleClickToggleBound) {
+            // 必须与 add 时一致传入 capture，否则无法真正移除
+            fileTree.removeEventListener("mousedown", handleDocToggle, true);
+        }
+        fileTreeMiddleClickToggleBound = false;
         if (this.intervalInitFileTreeMiddleClickToggleId) {
             clearInterval(this.intervalInitFileTreeMiddleClickToggleId);
             this.intervalInitFileTreeMiddleClickToggleId = null;
@@ -187,6 +194,10 @@ function initFileTreeSearchInput() {
 let fileTreeObserve: MutationObserver;
 
 function observeFileTreeChildChanges(targetElement: HTMLElement) {
+    if (fileTreeObserve) {
+        fileTreeObserve.disconnect();
+        fileTreeObserve = null;
+    }
     // 创建一个 MutationObserver 实例
     fileTreeObserve = new MutationObserver((mutationsList, observer) => {
         // 检查是否有子元素发生变化
@@ -272,14 +283,18 @@ function removeNotebookOrDocHide() {
 }
  
 
-function addFileTreeMiddleClickToggle() {
-    let fileTreeDocElement = document.querySelector("#layouts  div.layout-tab-container div.file-tree.sy__file");
-    if (!fileTreeDocElement) {
+let fileTreeMiddleClickToggleBound = false;
+
+function ensureFileTreeMiddleClickToggle() {
+    if (fileTreeMiddleClickToggleBound) {
         return;
     }
-    FileTreeService.ins.destoryFileTreeMiddleClickToggle();
-
-    document.querySelector('.sy__file').addEventListener('mousedown', handleDocToggle, true);
+    const fileTree = document.querySelector(".sy__file");
+    if (!fileTree) {
+        return;
+    }
+    fileTree.addEventListener("mousedown", handleDocToggle, true);
+    fileTreeMiddleClickToggleBound = true;
 }
 
 function handleDocToggle(event: MouseEvent) {

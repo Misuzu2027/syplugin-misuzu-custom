@@ -1,7 +1,6 @@
 
-
 import Instance from "@/utils/Instance";
-import { CUSTOM_CSS_CLASS_MAP } from "@/models/css-constant";
+import { CUSTOM_CSS_CLASS_MAP, getHideDockClassName, HIDEABLE_DOCK_TYPES, HideableDockType } from "@/models/css-constant";
 import { SettingService } from "./SettingService";
 
 export class CssService {
@@ -29,6 +28,9 @@ export class CssService {
         for (const key of Object.keys(CUSTOM_CSS_CLASS_MAP)) {
             bodyElement.classList.remove(CUSTOM_CSS_CLASS_MAP[key].name);
         }
+        for (const type of HIDEABLE_DOCK_TYPES) {
+            bodyElement.classList.remove(getHideDockClassName(type));
+        }
 
         let settingConfig = SettingService.ins.SettingConfig;
         if (settingConfig.useRefTextStyle) {
@@ -41,11 +43,30 @@ export class CssService {
             bodyElement.classList.add(CUSTOM_CSS_CLASS_MAP.codeBlockDragHeightClass.name);
         }
 
-        // bodyElement.classList.add("code-block__max-height");
+        const hideDockIcons = Array.isArray(settingConfig.hideDockIcons)
+            ? settingConfig.hideDockIcons
+            : [];
+        for (const type of hideDockIcons) {
+            if (!HIDEABLE_DOCK_TYPES.includes(type as HideableDockType)) {
+                continue;
+            }
+            bodyElement.classList.add(getHideDockClassName(type));
+            closeActiveDockPanel(type as HideableDockType);
+        }
     }
 
 
 
+}
+
+/** 关闭已打开的内置 Dock 面板（仅在图标处于激活态时点击最小化，避免误开） */
+function closeActiveDockPanel(type: HideableDockType) {
+    const activeIcon = document.querySelector(`.dock span.dock__item--active[data-type="${type}"]`);
+    if (!activeIcon) {
+        return;
+    }
+    const min = document.querySelector(`div.file-tree.sy__${type} span[data-type="min"]`) as HTMLElement | null;
+    min?.click();
 }
 
 

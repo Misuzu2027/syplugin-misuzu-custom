@@ -1,17 +1,15 @@
-个人使用，部分功能可能有数据或性能问题，支持反馈bug。
-有喜欢的功能，可以自行抽离该功能进行发布插件。
+Personal use. Some features may have data or performance issues; bug reports are welcome.
+If you like a feature, feel free to extract it into your own plugin.
 
-## 支持的功能
+## Features
 
-* 引用块样式
-* 代码块增强
-  * 代码块快捷命名
-  * 代码块常用语言
-  * 限制代码块高度
-  * 调整代码块高度
-  * 代码块支持展开折叠
-* 文档树
-  * 通过关键字过滤笔记本
-  * 支持匹配笔记本下的子文档来过滤笔记本。
-
-  
+* Block reference style
+* Code block enhancements
+  * Quick naming for code blocks
+  * Preferred languages for code blocks
+  * Limit code block height
+  * Adjust code block height
+  * Expand / collapse code blocks
+* Document tree
+  * Filter notebooks by keyword
+  * Also match sub-documents under a notebook when filtering

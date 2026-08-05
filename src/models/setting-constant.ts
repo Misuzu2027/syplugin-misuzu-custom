@@ -20,6 +20,8 @@ export function getDefaultSettingConfig() {
 
     defaultConfig.protyleWysiwygMiddleClickToggle = false;
 
+    defaultConfig.hideDockIcons = [];
+
     return defaultConfig;
 }
 
@@ -90,6 +92,26 @@ export function getSettingTabArray(): TabProperty[] {
                 // new ItemProperty({ key: "cacheExpirationTime", type: "number", name: "缓存过期时间（秒）", description: "", tips: "缓存数据失效时间", min: -1, }),
                 // new ConfigProperty({ key: "usePraentIdIdx", type: "switch", name: "使用索引", description: "", tips: "" }),
 
+            ]
+        }),
+        new TabProperty({
+            key: "dock-setting", name: i18n.Dock, iconKey: "iconDock", props: [
+                new ItemProperty({
+                    key: "hideDockIcons",
+                    type: "chips",
+                    name: i18n.HideDockIcons,
+                    description: i18n.HideDockIconsDesc,
+                    tips: "",
+                    options: [
+                        { name: i18n.DockIconOutline, value: "outline" },
+                        { name: i18n.DockIconInbox, value: "inbox" },
+                        { name: i18n.DockIconBookmark, value: "bookmark" },
+                        { name: i18n.DockIconTag, value: "tag" },
+                        { name: i18n.DockIconGraph, value: "graph" },
+                        { name: i18n.DockIconGlobalGraph, value: "globalGraph" },
+                        { name: i18n.DockIconBacklink, value: "backlink" },
+                    ],
+                }),
             ]
         }),
     );

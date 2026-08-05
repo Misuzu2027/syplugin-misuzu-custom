@@ -22,5 +22,15 @@
     "ShowTopBatchZoomBtn": "Show a batch image zoom button at the top",
     "DocumentEditingRelated": "Document Editing Related",
     "MiddleClickToggleProtyleTitleOrList": "Ctrl + Middle-click to zoom lists in the editor",
-    "MiddleClickToggleProtyleTitleOrListDesc": "Only modifies the current style temporarily; it will revert after a refresh."
+    "MiddleClickToggleProtyleTitleOrListDesc": "Only modifies the current style temporarily; it will revert after a refresh.",
+    "Dock": "Dock",
+    "HideDockIcons": "Hide Dock Icons",
+    "HideDockIconsDesc": "Checked items hide the corresponding built-in dock icons and close open panels",
+    "DockIconOutline": "Outline",
+    "DockIconInbox": "Inbox",
+    "DockIconBookmark": "Bookmark",
+    "DockIconTag": "Tag",
+    "DockIconGraph": "Graph",
+    "DockIconGlobalGraph": "Global Graph",
+    "DockIconBacklink": "Backlinks"
 }

@@ -25,6 +25,9 @@ export class SettingConfig {
     // 编辑器相关
     protyleWysiwygMiddleClickToggle: boolean;
 
+    // 侧栏 Dock：隐藏的内置图标 data-type 列表
+    // 可选值见 SiYuan Dock TYPES：outline / inbox / bookmark / tag / graph / globalGraph / backlink
+    hideDockIcons: string[];
 
 }
 

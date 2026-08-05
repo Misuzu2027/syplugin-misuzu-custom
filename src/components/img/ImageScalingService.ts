@@ -21,6 +21,12 @@ export class ImageScalingService {
 
         let showTopBar = SettingService.ins.SettingConfig.topBarShowImageZoomBtn;
         if (showTopBar) {
+            // 设置变更会反复调用 init；已有有效图标则跳过，避免顶栏重复叠加
+            if (this.topBarElement && document.body.contains(this.topBarElement)) {
+                this.removeDuplicateTopBars(this.topBarElement.id);
+                return;
+            }
+            this.removeDuplicateTopBars();
             this.topBarElement = EnvConfig.ins.plugin.addTopBar({
                 icon: "iconContract",
                 title: EnvConfig.ins.plugin.i18n.ZoomWidthLoadedImagesCurrentDocument,
@@ -50,24 +56,36 @@ export class ImageScalingService {
                 }
             });
         } else {
-            if (this.topBarElement) {
-                let topBarElements = EnvConfig.ins.plugin.topBarIcons;
-                for (let i = 0; i < topBarElements.length; i++) {
-                    if (topBarElements[i].id === this.topBarElement.id) {
-                        this.topBarElement.remove();
+            this.removeDuplicateTopBars();
+            this.topBarElement = null;
+        }
+    }
 
-                        topBarElements.splice(i, 1); // 删除当前元素
-                        i--; // 调整索引以避免跳过下一个元素
-                        break;
-                    }
-                }
+    /** 移除图片缩放顶栏图标；keepId 指定时保留该图标，用于清掉历史重复项 */
+    private removeDuplicateTopBars(keepId?: string) {
+        const title = EnvConfig.ins.plugin.i18n.ZoomWidthLoadedImagesCurrentDocument;
+        const topBarElements = EnvConfig.ins.plugin.topBarIcons;
+        for (let i = topBarElements.length - 1; i >= 0; i--) {
+            const el = topBarElements[i];
+            if (el.getAttribute("aria-label") !== title) {
+                continue;
             }
-
+            if (keepId && el.id === keepId) {
+                continue;
+            }
+            el.remove();
+            topBarElements.splice(i, 1);
         }
     }
 
     public destroy() {
-
+        this.removeDuplicateTopBars();
+        this.topBarElement = null;
+        const classFlag = "misuzu2027__image_zoom_mousedown";
+        if (document.body.classList.contains(classFlag)) {
+            document.body.removeEventListener("mousedown", handleImageZoomMousedown);
+            document.body.classList.remove(classFlag);
+        }
     }
 
     public initEventListener() {

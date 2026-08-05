@@ -2,6 +2,8 @@ import { EnvConfig } from "@/config/EnvConfig";
 import { SettingService } from "@/service/SettingService";
 import Instance from "@/utils/Instance";
 
+const PROTYLE_MOUSEDOWN_FLAG = "misuzu2027-protyle-wysiwyg-mousedown";
+
 export class ProtyleWysiwygService {
 
     public static get ins(): ProtyleWysiwygService {
@@ -9,43 +11,33 @@ export class ProtyleWysiwygService {
     }
 
     public init() {
-
-
-
         initBusEvent();
-
     }
 
     public destroy() {
         EnvConfig.ins.plugin.eventBus.off("loaded-protyle-static", handleLoadedProtyle);
-
+        EnvConfig.ins.plugin.eventBus.off("loaded-protyle-dynamic", handleLoadedProtyle);
     }
-
 
 }
 
 function initBusEvent() {
-    console.log("ProtyleWysiwyg handleLoadedProtyle")
-    let fileTreeKeywordFilter = SettingService.ins.SettingConfig.protyleWysiwygMiddleClickToggle;
+    const enabled = SettingService.ins.SettingConfig.protyleWysiwygMiddleClickToggle;
+    const plugin = EnvConfig.ins.plugin;
+    // 先解绑，避免设置反复开关或 init 时重复注册
+    plugin.eventBus.off("loaded-protyle-static", handleLoadedProtyle);
+    plugin.eventBus.off("loaded-protyle-dynamic", handleLoadedProtyle);
 
-
-    if (fileTreeKeywordFilter
-    ) {
-
-        EnvConfig.ins.plugin.eventBus.off("loaded-protyle-static", handleLoadedProtyle);
-        EnvConfig.ins.plugin.eventBus.off("loaded-protyle-dynamic", handleLoadedProtyle);
-
-        EnvConfig.ins.plugin.eventBus.on("loaded-protyle-static", handleLoadedProtyle);
-        EnvConfig.ins.plugin.eventBus.on("loaded-protyle-dynamic", handleLoadedProtyle);
-
+    if (!enabled) {
+        return;
     }
 
+    plugin.eventBus.on("loaded-protyle-static", handleLoadedProtyle);
+    plugin.eventBus.on("loaded-protyle-dynamic", handleLoadedProtyle);
 }
 
 
 function handleLoadedProtyle(e) {
-    console.log("ProtyleWysiwyg handleLoadedProtyle")
-    let protyleElement = e.detail.protyle.element;
     let wysiwygElement = e.detail.protyle.wysiwyg.element;
     initProtyleElement(wysiwygElement);
 }
@@ -53,14 +45,19 @@ function handleLoadedProtyle(e) {
 
 
 function initProtyleElement(protyleContentElement: HTMLElement) {
-    protyleContentElement.addEventListener('mousedown', handletoggleTitleOrListMousedown);
-
+    if (!protyleContentElement || protyleContentElement.getAttribute(PROTYLE_MOUSEDOWN_FLAG) === "1") {
+        return;
+    }
+    protyleContentElement.setAttribute(PROTYLE_MOUSEDOWN_FLAG, "1");
+    protyleContentElement.addEventListener("mousedown", handletoggleTitleOrListMousedown);
 }
 
 function handletoggleTitleOrListMousedown(event: MouseEvent) {
-    console.log("ProtyleWysiwyg handletoggleTitleOrListMousedown")
     if (event.button != 1) return;
     if (!event.ctrlKey) {
+        return;
+    }
+    if (!SettingService.ins.SettingConfig.protyleWysiwygMiddleClickToggle) {
         return;
     }
     const target = event.target as HTMLElement;
@@ -95,4 +92,3 @@ function handletoggleTitleOrListMousedown(event: MouseEvent) {
         }
     }
 }
-

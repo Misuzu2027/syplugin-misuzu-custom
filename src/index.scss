@@ -103,3 +103,17 @@ body.misuzu2027.code-block__drag-height .protyle-wysiwyg .code-block .drag-bar {
 }
 
 /* ---------------------------end 文件树样式 end------------------------------*/
+
+/* ---------------------------start 侧栏 Dock 样式 start------------------------------*/
+/* 隐藏内置 Dock 图标（参考官方 data-type：outline/inbox/bookmark/tag/graph/globalGraph/backlink） */
+body.misuzu2027.hide-dock-outline .dock span[data-type="outline"],
+body.misuzu2027.hide-dock-inbox .dock span[data-type="inbox"],
+body.misuzu2027.hide-dock-bookmark .dock span[data-type="bookmark"],
+body.misuzu2027.hide-dock-tag .dock span[data-type="tag"],
+body.misuzu2027.hide-dock-graph .dock span[data-type="graph"],
+body.misuzu2027.hide-dock-globalGraph .dock span[data-type="globalGraph"],
+body.misuzu2027.hide-dock-backlink .dock span[data-type="backlink"] {
+    display: none;
+}
+
+/* ---------------------------end 侧栏 Dock 样式 end------------------------------*/
