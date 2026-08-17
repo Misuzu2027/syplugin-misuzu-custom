@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { EnvConfig } from "@/config/EnvConfig";
     import { getSettingTabArray } from "@/models/setting-constant";
     import SettingLayout from "./setting-layout.svelte";
     import SettingItem from "./setting-item.svelte";
@@ -9,6 +10,7 @@
     import SettingChips from "./inputs/setting-chips.svelte";
     import { SettingService } from "@/service/SettingService";
 
+    const isMobile = EnvConfig.ins.isMobile;
     let tabArray: TabProperty[] = getSettingTabArray();
     let activeTab = tabArray[0]?.key ?? "";
     SettingService.ins.init();
@@ -20,7 +22,7 @@
     }));
 </script>
 
-<div class="mz-setting">
+<div class="mz-setting" class:mz-setting--mobile={isMobile}>
     <SettingLayout tabs={layoutTabs} bind:activeTab>
         {#each tabArray as tab (tab.key)}
             <div class="mz-setting__tab" class:fn__none={activeTab !== tab.key}>
@@ -49,11 +51,32 @@
 
 <style lang="scss">
     .mz-setting {
+        width: 100%;
         height: 100%;
+        min-height: 0;
     }
 
     .mz-setting__tab {
         display: flex;
         flex-direction: column;
+    }
+
+    .mz-setting--mobile :global(.mz-setting-item) {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .mz-setting--mobile :global(.mz-setting-item__control) {
+        width: 100%;
+        flex-shrink: 1;
+    }
+
+    .mz-setting--mobile :global(.b3-select),
+    .mz-setting--mobile :global(.b3-text-field),
+    .mz-setting--mobile :global(.fn__size200),
+    .mz-setting--mobile :global(.mz-setting__multi) {
+        width: 100%;
+        max-width: none;
     }
 </style>

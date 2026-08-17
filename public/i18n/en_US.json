@@ -1,5 +1,6 @@
 {
     "PluginSettings": "Misuzu Plugin Settings",
+    "settingLayoutResizerTitle": "Drag to resize",
     "Style": "Style",
     "ModifyReferencedTextStyle": "Modify Referenced Text Style ",
     "CodeBlock": "Code Block",

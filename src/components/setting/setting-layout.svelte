@@ -1,37 +1,55 @@
 <script lang="ts">
     import { onMount, onDestroy } from "svelte";
+    import { EnvConfig } from "@/config/EnvConfig";
 
     export let tabs: { key: string; label: string; icon?: string }[] = [];
     export let activeTab: string;
     export let sidebarWidth = 200;
     export let minSidebarWidth = 150;
-    export let maxSidebarWidth = 360;
+    export let maxSidebarWidth = 420;
     export let storageKey = "misuzu2027-setting-sidebar-width";
+
+    const isMobile = EnvConfig.ins.isMobile;
+    const resizerTitle =
+        (EnvConfig.ins.i18n as Record<string, string>)?.settingLayoutResizerTitle ??
+        "拖动调整宽度";
 
     let layoutRef: HTMLElement | null = null;
     let widthPx = sidebarWidth;
     let dragging = false;
+    let activePointerId: number | null = null;
 
     function clamp(w: number): number {
         return Math.min(maxSidebarWidth, Math.max(minSidebarWidth, w));
     }
 
-    function onResizeStart(e: MouseEvent) {
+    function onResizeStart(e: PointerEvent) {
+        if (isMobile) return;
+        if (e.pointerType === "mouse" && e.button !== 0) return;
         e.preventDefault();
         dragging = true;
+        activePointerId = e.pointerId;
+        try {
+            (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+        } catch {
+            /* ignore */
+        }
         document.body.style.cursor = "col-resize";
         document.body.style.userSelect = "none";
     }
 
-    function onResizeMove(e: MouseEvent) {
-        if (!dragging || !layoutRef) return;
+    function onResizeMove(e: PointerEvent) {
+        if (isMobile || !dragging || !layoutRef) return;
+        if (activePointerId !== null && e.pointerId !== activePointerId) return;
         const rect = layoutRef.getBoundingClientRect();
         widthPx = clamp(e.clientX - rect.left);
     }
 
-    function onResizeEnd() {
-        if (!dragging) return;
+    function onResizeEnd(e: PointerEvent) {
+        if (isMobile || !dragging) return;
+        if (activePointerId !== null && e.pointerId !== activePointerId) return;
         dragging = false;
+        activePointerId = null;
         document.body.style.cursor = "";
         document.body.style.userSelect = "";
         try {
@@ -59,22 +77,22 @@
         } catch {
             /* ignore */
         }
-        document.addEventListener("mousemove", onResizeMove);
-        document.addEventListener("mouseup", onResizeEnd);
     });
 
     onDestroy(() => {
-        document.removeEventListener("mousemove", onResizeMove);
-        document.removeEventListener("mouseup", onResizeEnd);
         document.body.style.cursor = "";
         document.body.style.userSelect = "";
     });
 </script>
 
-<div class="mz-setting-layout" bind:this={layoutRef}>
+<div
+    class="mz-setting-layout"
+    class:mz-setting-layout--mobile={isMobile}
+    bind:this={layoutRef}
+>
     <ul
         class="mz-setting-layout__sidebar b3-list b3-list--background"
-        style="width:{widthPx}px;"
+        style={isMobile ? undefined : `width:${widthPx}px;`}
         role="tablist"
     >
         {#each tabs as tab (tab.key)}
@@ -97,16 +115,22 @@
         {/each}
     </ul>
 
-    <div
-        class="mz-setting-layout__resizer"
-        class:mz-setting-layout__resizer--active={dragging}
-        on:mousedown={onResizeStart}
-        role="slider"
-        aria-orientation="vertical"
-        aria-label="Resize sidebar"
-        aria-valuenow={widthPx}
-        tabindex="-1"
-    ></div>
+    {#if !isMobile}
+        <div
+            class="mz-setting-layout__resizer"
+            class:mz-setting-layout__resizer--active={dragging}
+            title={resizerTitle}
+            on:pointerdown={onResizeStart}
+            on:pointermove={onResizeMove}
+            on:pointerup={onResizeEnd}
+            on:pointercancel={onResizeEnd}
+            role="slider"
+            aria-orientation="vertical"
+            aria-label={resizerTitle}
+            aria-valuenow={widthPx}
+            tabindex="-1"
+        ></div>
+    {/if}
 
     <div class="mz-setting-layout__content">
         <slot />
@@ -142,6 +166,7 @@
         flex: 0 0 6px;
         margin: 0 -2px;
         cursor: col-resize;
+        touch-action: none;
         position: relative;
         z-index: 1;
     }
@@ -167,5 +192,29 @@
         min-width: 0;
         overflow: auto;
         padding: 16px 20px;
+    }
+
+    .mz-setting-layout--mobile {
+        flex-direction: column;
+    }
+
+    .mz-setting-layout--mobile .mz-setting-layout__sidebar {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        border-bottom: 1px solid var(--b3-border-color);
+    }
+
+    .mz-setting-layout--mobile .mz-setting-layout__sidebar :global(.b3-list-item) {
+        flex: 0 0 auto;
+        padding: 8px 12px;
+    }
+
+    .mz-setting-layout--mobile .mz-setting-layout__content {
+        padding: 12px 14px;
     }
 </style>

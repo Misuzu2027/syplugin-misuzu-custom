@@ -1,5 +1,6 @@
 {
     "PluginSettings": "Misuzu插件设置",
+    "settingLayoutResizerTitle": "拖动调整宽度",
     "Style": "样式",
     "ModifyReferencedTextStyle": "修改引用文本样式 ",
     "CodeBlock": "代码块",
