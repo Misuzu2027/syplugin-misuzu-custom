@@ -3,7 +3,7 @@
     import { setBlockAttrs } from "@/utils/api";
 
     // import { EnvConfig } from "@/config/EnvConfig";
-    import { onMount } from "svelte";
+    import { onDestroy, onMount } from "svelte";
 
     export let codeBlockElement: HTMLElement | Element;
 
@@ -14,6 +14,8 @@
     onMount(async () => {
         addCodeBlockObeserver();
     });
+
+    let styleObserver: MutationObserver | undefined;
 
     function addCodeBlockObeserver() {
         // 选择要观察的元素
@@ -52,7 +54,13 @@
             attributes: true, // 监听属性变化
             attributeFilter: ["style"], // 仅监听 style 属性
         });
+        styleObserver = observer;
     }
+
+    onDestroy(() => {
+        styleObserver?.disconnect();
+        styleObserver = undefined;
+    });
 
     function handleCodeBlockToggle(event) {
         if (!codeBlockElement) {

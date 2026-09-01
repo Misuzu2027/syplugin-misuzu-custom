@@ -8,6 +8,9 @@ import { setBlockAttrs } from "@/utils/api";
 import { SettingService } from "@/service/SettingService";
 import { isValidStr } from "@/utils/string-util";
 
+const codeBlockLanguageObservers = new Set<MutationObserver>();
+const codeBlockSvelteApps: Array<{ $destroy: () => void }> = [];
+
 export class CodeBlockService {
 
     public static get ins(): CodeBlockService {
@@ -26,8 +29,18 @@ export class CodeBlockService {
 
         EnvConfig.ins.plugin.eventBus.off("ws-main", handlewsMain);
 
-        // document.removeEventListener("mousemove", handleDocumentMousemove);
-        // document.removeEventListener("mouseup", handleDocumentMouseup);
+        for (const observer of codeBlockLanguageObservers) {
+            observer.disconnect();
+        }
+        codeBlockLanguageObservers.clear();
+        document.querySelectorAll("[data-misuzu2027-observed]").forEach((element) => {
+            element.removeAttribute("data-misuzu2027-observed");
+        });
+
+        for (const app of codeBlockSvelteApps) {
+            app.$destroy();
+        }
+        codeBlockSvelteApps.length = 0;
 
         let dragBarElementArray = document.querySelectorAll(".drag-bar.misuzu2027__copy");
         if (dragBarElementArray) {
@@ -41,6 +54,9 @@ export class CodeBlockService {
                 element.remove();
             }
         }
+        document.querySelectorAll("span[misuzu2027-code-block-toggle-button]").forEach((element) => {
+            element.remove();
+        });
     }
 
 }
@@ -172,13 +188,13 @@ function createCodeBlockNameInputSvelte(
     codeBlockNameElement.setAttribute("contenteditable", "false");
     codeBlockNameElement.setAttribute("misuzu2027-code-block-naming", "1");
 
-    new CodeBlockNameInputSvelte({
+    codeBlockSvelteApps.push(new CodeBlockNameInputSvelte({
         target: codeBlockNameElement,
         props: {
             codeBlockId: blockId,
             codeBlockName: blockName,
         }
-    });
+    }));
     languageSelectElement.insertAdjacentElement('afterend', codeBlockNameElement);
 
 
@@ -198,12 +214,12 @@ function createCodeBlockToggleButton(codeBlockElement: Element,) {
     codeBlockNameElement.setAttribute("contenteditable", "false");
     codeBlockNameElement.setAttribute(atrName, "1");
 
-    new CodeBlockToggleButtonSvelte({
+    codeBlockSvelteApps.push(new CodeBlockToggleButtonSvelte({
         target: codeBlockNameElement,
         props: {
             codeBlockElement,
         }
-    });
+    }));
     iconFirstElement.parentElement.insertBefore(codeBlockNameElement, iconFirstElement);
 
 
@@ -398,4 +414,5 @@ function addObserveCodeBlockLanguageElement(protyleElement: HTMLElement) {
     protyleUtilElement.setAttribute("data-misuzu2027-observed", "1")
     // 开始观察目标节点
     observer.observe(protyleUtilElement, config);
+    codeBlockLanguageObservers.add(observer);
 }

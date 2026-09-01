@@ -55,7 +55,19 @@ export class CssService {
         }
     }
 
-
+    public destroy() {
+        const bodyElement = getBodyElement();
+        if (!bodyElement) {
+            return;
+        }
+        bodyElement.classList.remove("misuzu2027");
+        for (const key of Object.keys(CUSTOM_CSS_CLASS_MAP)) {
+            bodyElement.classList.remove(CUSTOM_CSS_CLASS_MAP[key].name);
+        }
+        for (const type of HIDEABLE_DOCK_TYPES) {
+            bodyElement.classList.remove(getHideDockClassName(type));
+        }
+    }
 
 }
 

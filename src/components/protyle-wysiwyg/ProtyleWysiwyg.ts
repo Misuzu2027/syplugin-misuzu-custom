@@ -17,6 +17,10 @@ export class ProtyleWysiwygService {
     public destroy() {
         EnvConfig.ins.plugin.eventBus.off("loaded-protyle-static", handleLoadedProtyle);
         EnvConfig.ins.plugin.eventBus.off("loaded-protyle-dynamic", handleLoadedProtyle);
+        document.querySelectorAll(`[${PROTYLE_MOUSEDOWN_FLAG}="1"]`).forEach((element) => {
+            element.removeEventListener("mousedown", handletoggleTitleOrListMousedown);
+            element.removeAttribute(PROTYLE_MOUSEDOWN_FLAG);
+        });
     }
 
 }

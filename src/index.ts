@@ -49,13 +49,7 @@ export default class Misuzu2027Plugin extends Plugin {
         FileTreeService.ins.destroy();
         ProtyleWysiwygService.ins.destroy();
         ImageScalingService.ins.destroy();
-    }
-
-    uninstall() {
-        CodeBlockService.ins.destroy();
-        FileTreeService.ins.destroy();
-        ProtyleWysiwygService.ins.destroy();
-        ImageScalingService.ins.destroy();
+        CssService.ins.destroy();
     }
 
 
