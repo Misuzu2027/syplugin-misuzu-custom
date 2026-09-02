@@ -105,7 +105,6 @@ async function getPersistentConfig(): Promise<SettingConfig> {
             for (let key in loaded) {
                 setKeyValue(settingConfig, key, loaded[key]);
             }
-            migrateHideDockIcons(settingConfig, loaded);
         } catch (error_msg) {
             console.log(`Setting load error: ${error_msg}`);
         }
@@ -115,33 +114,8 @@ async function getPersistentConfig(): Promise<SettingConfig> {
 
 function setKeyValue(settingConfig, key: any, value: any) {
     if (!(key in settingConfig)) {
-        // 旧版侧栏隐藏开关迁移到 hideDockIcons，不再视为配置项
-        if (key === "hideBookmarkDockIcon" || key === "hideTagDockIcon") {
-            return;
-        }
-        console.error(`"${key}" is not a setting`);
         return;
     }
     settingConfig[key] = value;
-}
-
-/** 兼容旧版 hideBookmarkDockIcon / hideTagDockIcon 开关配置 */
-function migrateHideDockIcons(settingConfig: SettingConfig, loaded: Record<string, any>) {
-    if (!Array.isArray(settingConfig.hideDockIcons)) {
-        settingConfig.hideDockIcons = [];
-    }
-    if (settingConfig.hideDockIcons.length > 0) {
-        return;
-    }
-    const migrated: string[] = [];
-    if (loaded.hideBookmarkDockIcon === true) {
-        migrated.push("bookmark");
-    }
-    if (loaded.hideTagDockIcon === true) {
-        migrated.push("tag");
-    }
-    if (migrated.length > 0) {
-        settingConfig.hideDockIcons = migrated;
-    }
 }
 

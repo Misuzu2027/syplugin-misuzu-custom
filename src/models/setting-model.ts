@@ -25,18 +25,17 @@ export class SettingConfig {
     // 编辑器相关
     protyleWysiwygMiddleClickToggle: boolean;
 
-    // 侧栏 Dock：隐藏的内置图标 data-type 列表
-    // 可选值见 SiYuan Dock TYPES：outline / inbox / bookmark / tag / graph / globalGraph / backlink
-    hideDockIcons: string[];
-
 }
 
+
+export type SettingTabPage = "items" | "conf-backup";
 
 interface ITabProperty {
     key: string;
     name: string;
     props: Array<ItemProperty>;
     iconKey?: string;
+    page?: SettingTabPage;
 }
 
 
@@ -45,8 +44,9 @@ export class TabProperty {
     name: string;
     iconKey: string;
     props: ItemProperty[];
+    page: SettingTabPage;
 
-    constructor({ key, name, iconKey, props }: ITabProperty) {
+    constructor({ key, name, iconKey, props, page }: ITabProperty) {
         this.key = key;
         this.name = name;
         if (isValidStr(iconKey)) {
@@ -55,6 +55,7 @@ export class TabProperty {
             this.iconKey = "setting";
         }
         this.props = props;
+        this.page = page ?? "items";
 
     }
 

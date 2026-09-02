@@ -20,8 +20,6 @@ export function getDefaultSettingConfig() {
 
     defaultConfig.protyleWysiwygMiddleClickToggle = false;
 
-    defaultConfig.hideDockIcons = [];
-
     return defaultConfig;
 }
 
@@ -45,7 +43,7 @@ export function getSettingTabArray(): TabProperty[] {
 
                 new ItemProperty({ key: "codeBlockNaming", type: "switch", name: i18n.CodeBlockNaming, description: "", tips: "" }),
                 new ItemProperty({ key: "codeBlockTopLanguages", type: "text", name: i18n.CommonCodeBlockLanguages, description: i18n.CommonCodeBlockLanguagesTips, tips: "" }),
-                new ItemProperty({ key: "codeBlockMaxHeight", type: "number", name: i18n.MaximumCodeBlockHeight, description: "", tips: "", min: 150 }),
+                new ItemProperty({ key: "codeBlockMaxHeight", type: "number", name: i18n.MaximumCodeBlockHeight, description: i18n.MaximumCodeBlockHeightTips, tips: "", min: 150 }),
                 new ItemProperty({ key: "codeBlockAdjustHeight", type: "switch", name: i18n.AdjustCodeBlockHeight, description: i18n.AdjustCodeBlockHeightTips, tips: "" }),
                 new ItemProperty({ key: "codeBlockToggle", type: "switch", name: i18n.DisplayCollapseExpandCodeBlockButton, description: "", tips: "" }),
                 new ItemProperty({ key: "codeBlockFoldHeight", type: "number", name: i18n.CollapsedCodeBlockHeight, description: "", tips: "", min: 150 }),
@@ -95,24 +93,11 @@ export function getSettingTabArray(): TabProperty[] {
             ]
         }),
         new TabProperty({
-            key: "dock-setting", name: i18n.Dock, iconKey: "iconDock", props: [
-                new ItemProperty({
-                    key: "hideDockIcons",
-                    type: "chips",
-                    name: i18n.HideDockIcons,
-                    description: i18n.HideDockIconsDesc,
-                    tips: "",
-                    options: [
-                        { name: i18n.DockIconOutline, value: "outline" },
-                        { name: i18n.DockIconInbox, value: "inbox" },
-                        { name: i18n.DockIconBookmark, value: "bookmark" },
-                        { name: i18n.DockIconTag, value: "tag" },
-                        { name: i18n.DockIconGraph, value: "graph" },
-                        { name: i18n.DockIconGlobalGraph, value: "globalGraph" },
-                        { name: i18n.DockIconBacklink, value: "backlink" },
-                    ],
-                }),
-            ]
+            key: "conf-backup-setting",
+            name: i18n.SettingBackupRestore,
+            iconKey: "iconHistory",
+            page: "conf-backup",
+            props: [],
         }),
     );
 

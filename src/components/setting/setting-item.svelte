@@ -2,11 +2,9 @@
     import { ItemProperty } from "@/models/setting-model";
 
     export let itemProperty: ItemProperty;
-    /** Stack the control below the label (used by wide multi-select chips). */
-    export let column = false;
 </script>
 
-<div class="mz-setting-item" class:mz-setting-item--col={column}>
+<div class="mz-setting-item">
     <div class="mz-setting-item__label">
         <div class="mz-setting-item__title">{itemProperty.name}</div>
         {#if itemProperty.description}
@@ -34,12 +32,6 @@
         border-bottom: none;
     }
 
-    .mz-setting-item--col {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 8px;
-    }
-
     .mz-setting-item__label {
         min-width: 0;
     }
@@ -55,10 +47,6 @@
         color: var(--b3-theme-on-surface-light);
         margin-top: 3px;
         line-height: 1.5;
-    }
-
-    .mz-setting-item--col .mz-setting-item__control {
-        width: 100%;
     }
 
     .mz-setting-item__control {

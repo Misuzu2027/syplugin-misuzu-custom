@@ -520,6 +520,18 @@ export async function currentTime(): Promise<number> {
     return request('/api/system/currentTime', {});
 }
 
+export async function getSystemConf(): Promise<any> {
+    return request('/api/system/getConf', {});
+}
+
+export async function postApi(url: string, data: any = {}): Promise<IWebSocketData> {
+    return fetchSyncPost(url, data);
+}
+
+export async function reloadUI(): Promise<IWebSocketData> {
+    return fetchSyncPost('/api/ui/reloadUI', {});
+}
+
 
 
 export async function getBacklinkDoc(defID: string, refTreeID: string, keyword: string): Promise<{ backlinks: IBacklinkData[] }> {

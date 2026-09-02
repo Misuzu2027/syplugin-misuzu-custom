@@ -40,8 +40,7 @@ export default class Misuzu2027Plugin extends Plugin {
     }
 
     onLayoutReady() {
-        // Dock 图标在布局就绪后才稳定存在，此时再应用一次侧栏隐藏并关闭已打开面板
-        CssService.ins.initClass();
+
     }
 
     async onunload() {

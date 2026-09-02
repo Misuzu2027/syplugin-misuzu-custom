@@ -4,9 +4,18 @@ import CodeBlockNameInputSvelte from "@/components/code-block/code-block-name-in
 import CodeBlockToggleButtonSvelte from "@/components/code-block/code-block-toggle-button.svelte";
 import { findScrollableParent, stringToElement } from "@/utils/html-util";
 import { CssService } from "@/service/CssService";
-import { setBlockAttrs } from "@/utils/api";
 import { SettingService } from "@/service/SettingService";
 import { isValidStr } from "@/utils/string-util";
+import {
+    clearLegacyHljsHeightStyles,
+    getCodeBlockNaturalHeight,
+    getGlobalCodeBlockMaxHeight,
+    getHljsElement,
+    isPlainCodeBlock,
+    migrateLegacyCodeBlockHeight,
+    persistCodeBlockStyle,
+    setCodeBlockMaxHeight,
+} from "@/components/code-block/code-block-height";
 
 const codeBlockLanguageObservers = new Set<MutationObserver>();
 const codeBlockSvelteApps: Array<{ $destroy: () => void }> = [];
@@ -75,6 +84,7 @@ function initBusEvent() {
         || settingConfig.codeBlockNaming
         || settingConfig.codeBlockMaxHeight
         || settingConfig.codeBlockAdjustHeight
+        || settingConfig.codeBlockToggle
     ) {
         plugin.eventBus.on("loaded-protyle-static", handleLoadedProtyle);
         plugin.eventBus.on("loaded-protyle-dynamic", handleLoadedProtyle);
@@ -83,6 +93,7 @@ function initBusEvent() {
     if (settingConfig.codeBlockNaming
         || settingConfig.codeBlockMaxHeight
         || settingConfig.codeBlockAdjustHeight
+        || settingConfig.codeBlockToggle
     ) {
         plugin.eventBus.on("ws-main", handlewsMain);
     }
@@ -145,31 +156,28 @@ function initCodeBlockElementList(codeBlockElementArray: NodeListOf<Element>) {
         return;
     }
 
-    for (const codeBlockElement of codeBlockElementArray) {
+    for (const element of codeBlockElementArray) {
         // 添加代码块命名
         if (settingConfig.codeBlockNaming) {
-            createCodeBlockNameInputSvelte(codeBlockElement);
+            createCodeBlockNameInputSvelte(element);
         }
 
+        if (!isPlainCodeBlock(element)) {
+            continue;
+        }
+
+        migrateLegacyCodeBlockHeight(element);
+        clearLegacyHljsHeightStyles(element);
 
         // 创建折叠按钮
         if (settingConfig.codeBlockToggle) {
-            createCodeBlockToggleButton(codeBlockElement);
-        }
-
-
-        // 设置代码块最大高度
-        if (settingConfig.codeBlockMaxHeight && settingConfig.codeBlockMaxHeight > 50) {
-            let codeBlockContainerElement = codeBlockElement.querySelector("div.hljs") as HTMLElement;
-            updateCodeBlockMaxHeightElement(codeBlockContainerElement, settingConfig.codeBlockMaxHeight);
+            createCodeBlockToggleButton(element);
         }
 
         // 创建拖动条
         if (settingConfig.codeBlockAdjustHeight) {
-            addCodeBlockDragBar(codeBlockElement);
+            addCodeBlockDragBar(element);
         }
-
-
     }
 }
 
@@ -183,6 +191,9 @@ function createCodeBlockNameInputSvelte(
     let blockId = codeBlockElement.getAttribute("data-node-id");
     let blockName = codeBlockElement.getAttribute("name");
     let languageSelectElement = codeBlockElement.querySelector(`.protyle-action span.protyle-action__language`);
+    if (!languageSelectElement) {
+        return;
+    }
     let codeBlockNameElement = document.createElement("span");
     codeBlockNameElement.classList.add("misuzu2027__copy", "misuzu2027__protyle-custom");
     codeBlockNameElement.setAttribute("contenteditable", "false");
@@ -208,6 +219,9 @@ function createCodeBlockToggleButton(codeBlockElement: Element,) {
     }
     // b3-tooltips__nw b3-tooltips protyle-icon protyle-icon--first protyle-action__copy
     let iconFirstElement = codeBlockElement.querySelector(".protyle-icon--first");
+    if (!iconFirstElement?.parentElement) {
+        return;
+    }
 
     let codeBlockNameElement = document.createElement("span");
     codeBlockNameElement.classList.add("misuzu2027__copy", "misuzu2027__protyle-custom");
@@ -226,18 +240,15 @@ function createCodeBlockToggleButton(codeBlockElement: Element,) {
 }
 
 
-const ATTR_KEY = "custom-misuzu2027-code-block-height";
-
-function addCodeBlockDragBar(codeBlockElement: Element) {
+function addCodeBlockDragBar(codeBlockElement: HTMLElement) {
     if (codeBlockElement.querySelector("div.drag-bar.misuzu2027__protyle-custom")) {
         return;
     }
-    // 父容器禁止输入。
-    // codeBlockElement.setAttribute("contenteditable", "false");
 
-    let lastHeight = codeBlockElement.getAttribute(ATTR_KEY);
-    let hljsElement = codeBlockElement.querySelector("div.hljs") as HTMLElement;
-    // let linenumberElement = codeBlockElement.querySelector(".protyle-linenumber__rows") as HTMLElement;
+    const hljsElement = getHljsElement(codeBlockElement);
+    if (!hljsElement) {
+        return;
+    }
 
     let dragBarElement = document.createElement("div");
     dragBarElement.classList.add("drag-bar", "misuzu2027__copy", "misuzu2027__protyle-custom");
@@ -252,8 +263,6 @@ function addCodeBlockDragBar(codeBlockElement: Element) {
 
     let isDragging = false;
     let draggingBarElement: HTMLElement;
-    let draggingCodeBlockId: string;
-    let draggingCodeBlockContainerElement: HTMLElement;
     let draggingStartY: number;
     let draggingScrollableParentElement: HTMLElement;
     let draggingScrollTop: number;
@@ -261,19 +270,14 @@ function addCodeBlockDragBar(codeBlockElement: Element) {
 
     dragBarElement.addEventListener('mousedown', (e) => {
         e.stopPropagation();
+        e.preventDefault();
 
-        // hljsElement.focus();
         isDragging = true;
         draggingBarElement = dragBarElement;
-        draggingCodeBlockId = codeBlockElement.getAttribute("data-node-id");
-        draggingCodeBlockContainerElement = hljsElement
         draggingStartY = e.clientY;
-        draggingScrollableParentElement = findScrollableParent(codeBlockElement as HTMLElement);
-        draggingScrollTop = draggingScrollableParentElement.scrollTop;
-        draggingStartHeight = parseFloat(hljsElement.style.height)
-        if (!draggingStartHeight) {
-            draggingStartHeight = parseFloat(window.getComputedStyle(hljsElement).height);
-        }
+        draggingScrollableParentElement = findScrollableParent(codeBlockElement);
+        draggingScrollTop = draggingScrollableParentElement ? draggingScrollableParentElement.scrollTop : 0;
+        draggingStartHeight = codeBlockElement.getBoundingClientRect().height;
 
         document.addEventListener("mousemove", handleDocumentMousemove);
         document.addEventListener("mouseup", handleDocumentMouseup);
@@ -286,9 +290,11 @@ function addCodeBlockDragBar(codeBlockElement: Element) {
             return;
         }
         e.stopPropagation();
-        let newScrollTop = draggingScrollableParentElement.scrollTop - draggingScrollTop;
+        let newScrollTop = draggingScrollableParentElement
+            ? draggingScrollableParentElement.scrollTop - draggingScrollTop
+            : 0;
         let newHeight = draggingStartHeight - offsetY + newScrollTop;
-        updateCodeBlockHeightElement(draggingCodeBlockContainerElement, newHeight);
+        updateDraggingHeight(newHeight);
     };
 
     function handleDocumentMouseup() {
@@ -297,76 +303,51 @@ function addCodeBlockDragBar(codeBlockElement: Element) {
                 draggingBarElement.style.removeProperty("background-color");
             }
             isDragging = false;
-
-            let attrs = {};
-            let styleHeightVal = draggingCodeBlockContainerElement.style.height;
-            attrs[ATTR_KEY] = styleHeightVal;
-            setBlockAttrs(draggingCodeBlockId, attrs);
-
+            persistCodeBlockStyle(codeBlockElement);
         }
 
         document.removeEventListener("mousemove", handleDocumentMousemove);
         document.removeEventListener("mouseup", handleDocumentMouseup);
     }
 
-    function updateCodeBlockHeightElement(codeBlockContainerElement: HTMLElement, newHeight: number) {
-        if (!codeBlockContainerElement || isNaN(newHeight) || newHeight < 20) {
-            if (newHeight < 20 && isDragging && draggingBarElement) {
+    function updateDraggingHeight(newHeight: number) {
+        if (isNaN(newHeight) || newHeight < 20) {
+            if (isDragging && draggingBarElement) {
                 draggingBarElement.style.backgroundColor = "red";
             }
             return;
         }
-        let maxHeight = parseFloat(codeBlockContainerElement.style.maxHeight);
 
-        if (!isNaN(maxHeight) && newHeight > maxHeight + 1) {
-            if (newHeight > maxHeight + 1 && isDragging && draggingBarElement) {
+        const globalMaxHeight = getGlobalCodeBlockMaxHeight();
+        if (globalMaxHeight && newHeight > globalMaxHeight + 1) {
+            if (isDragging && draggingBarElement) {
                 draggingBarElement.style.backgroundColor = "red";
-                codeBlockContainerElement.style.removeProperty("height");
             }
+            setCodeBlockMaxHeight(codeBlockElement, globalMaxHeight, false);
             return;
         }
-        let scrollEhight = codeBlockContainerElement.scrollHeight;
-        if (newHeight >= scrollEhight - 1 && isDragging && draggingBarElement) {
-            draggingBarElement.style.backgroundColor = "red";
-            codeBlockContainerElement.style.removeProperty("height");
+
+        const naturalHeight = getCodeBlockNaturalHeight(codeBlockElement);
+        if (newHeight >= naturalHeight - 1) {
+            if (isDragging && draggingBarElement) {
+                draggingBarElement.style.backgroundColor = "red";
+            }
+            setCodeBlockMaxHeight(codeBlockElement, null, false);
             return;
         }
 
         if (draggingBarElement) {
             draggingBarElement.style.removeProperty("background-color");
         }
-
-        codeBlockContainerElement.style.height = `${newHeight}px`;
-
+        setCodeBlockMaxHeight(codeBlockElement, newHeight, false);
     }
-
-    updateCodeBlockHeightElement(hljsElement, parseFloat(lastHeight));
-
-
-}
-
-
-function updateCodeBlockMaxHeightElement(codeBlockContainerElement: HTMLElement, newMaxHeight: number) {
-    if (!codeBlockContainerElement || isNaN(newMaxHeight) || newMaxHeight < 20) {
-        return;
-    }
-
-    codeBlockContainerElement.style.maxHeight = `${newMaxHeight}px`;
-    // let linenumberElement = codeBlockContainerElement.parentElement.querySelector(".protyle-linenumber__rows") as HTMLElement;
-    // addCodeBlockContainerElementScrollEvent(codeBlockContainerElement);
-    // let offsetHeight = codeBlockContainerElement.getBoundingClientRect().height - parseFloat(window.getComputedStyle(codeBlockContainerElement).height);
-    // if (linenumberElement) {
-    //     let linenumberHeight = newMaxHeight + offsetHeight;
-    //     linenumberElement.style.maxHeight = linenumberHeight + "px"
-    // }
-    // addObserveCodeBlockLinenumberElement(codeBlockContainerElement);
 }
 
 
 function addObserveCodeBlockLanguageElement(protyleElement: HTMLElement) {
 
     let protyleUtilElement = protyleElement.querySelector("div.protyle-util");
-    if (protyleUtilElement.getAttribute("data-misuzu2027-observed") == "1") {
+    if (!protyleUtilElement || protyleUtilElement.getAttribute("data-misuzu2027-observed") == "1") {
         return;
     }
 

@@ -7,8 +7,8 @@
     import SettingSwitch from "./inputs/setting-switch.svelte";
     import SettingSelect from "./inputs/setting-select.svelte";
     import SettingInput from "./inputs/setting-input.svelte";
-    import SettingChips from "./inputs/setting-chips.svelte";
     import { SettingService } from "@/service/SettingService";
+    import ConfBackupPage from "./conf-backup-page.svelte";
 
     const isMobile = EnvConfig.ins.isMobile;
     let tabArray: TabProperty[] = getSettingTabArray();
@@ -26,24 +26,26 @@
     <SettingLayout tabs={layoutTabs} bind:activeTab>
         {#each tabArray as tab (tab.key)}
             <div class="mz-setting__tab" class:fn__none={activeTab !== tab.key}>
-                {#each tab.props as itemProperty (itemProperty.key)}
-                    <SettingItem {itemProperty} column={itemProperty.type === "chips"}>
-                        {#if itemProperty.type == "switch"}
-                            <SettingSwitch {itemProperty} />
-                        {:else if itemProperty.type == "chips"}
-                            <SettingChips {itemProperty} />
-                        {:else if itemProperty.type == "select"}
-                            <SettingSelect {itemProperty} />
-                        {:else if itemProperty.type == "number" || itemProperty.type == "text"}
-                            <SettingInput {itemProperty} />
-                        {:else}
-                            不能载入设置项，请检查设置代码实现。 Key: {itemProperty.key}
-                            <br />
-                            can't load settings, check code please. Key:
-                            {itemProperty.key}
-                        {/if}
-                    </SettingItem>
-                {/each}
+                {#if tab.page === "conf-backup"}
+                    <ConfBackupPage />
+                {:else}
+                    {#each tab.props as itemProperty (itemProperty.key)}
+                        <SettingItem {itemProperty}>
+                            {#if itemProperty.type == "switch"}
+                                <SettingSwitch {itemProperty} />
+                            {:else if itemProperty.type == "select"}
+                                <SettingSelect {itemProperty} />
+                            {:else if itemProperty.type == "number" || itemProperty.type == "text"}
+                                <SettingInput {itemProperty} />
+                            {:else}
+                                不能载入设置项，请检查设置代码实现。 Key: {itemProperty.key}
+                                <br />
+                                can't load settings, check code please. Key:
+                                {itemProperty.key}
+                            {/if}
+                        </SettingItem>
+                    {/each}
+                {/if}
             </div>
         {/each}
     </SettingLayout>

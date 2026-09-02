@@ -1,58 +1,55 @@
 <script lang="ts">
-    import { SettingService } from "@/service/SettingService";
-    import { setBlockAttrs } from "@/utils/api";
-
-    // import { EnvConfig } from "@/config/EnvConfig";
     import { onDestroy, onMount } from "svelte";
+    import {
+        getCodeBlockFoldHeight,
+        getCodeBlockNaturalHeight,
+        getGlobalCodeBlockMaxHeight,
+        isCodeBlockFullyExpanded,
+        setCodeBlockMaxHeight,
+    } from "@/components/code-block/code-block-height";
 
     export let codeBlockElement: HTMLElement | Element;
 
-    // let rootElement: HTMLElement;
     let blockExpand: boolean;
-    const ATTR_KEY = "custom-misuzu2027-code-block-height";
+    let styleObserver: MutationObserver | undefined;
 
     onMount(async () => {
+        refreshExpandState();
         addCodeBlockObeserver();
     });
 
-    let styleObserver: MutationObserver | undefined;
+    function getBlockElement(): HTMLElement | null {
+        return codeBlockElement instanceof HTMLElement ? codeBlockElement : null;
+    }
+
+    function refreshExpandState() {
+        const blockElement = getBlockElement();
+        if (!blockElement) {
+            return;
+        }
+        blockExpand = isCodeBlockFullyExpanded(blockElement);
+    }
 
     function addCodeBlockObeserver() {
-        // 选择要观察的元素
-        let hljsElement = codeBlockElement.querySelector(
-            "div.hljs",
-        ) as HTMLElement;
-        blockExpand = hljsElement.clientHeight >= hljsElement.scrollHeight;
-        // 创建 MutationObserver 实例
+        const blockElement = getBlockElement();
+        if (!blockElement) {
+            return;
+        }
         const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (!hljsElement) {
-                    return;
-                }
+            for (const mutation of mutations) {
                 if (
                     mutation.type !== "attributes" ||
                     mutation.attributeName !== "style"
                 ) {
-                    return;
+                    continue;
                 }
-                blockExpand =
-                    hljsElement.clientHeight >= hljsElement.scrollHeight;
-                let lastHeight = codeBlockElement.getAttribute(ATTR_KEY);
-                let styleHeightVal = hljsElement.style.height;
-                if (lastHeight != styleHeightVal) {
-                    let codeBlockId =
-                        codeBlockElement.getAttribute("data-node-id");
-                    let attrs = {};
-                    attrs[ATTR_KEY] = styleHeightVal;
-                    setBlockAttrs(codeBlockId, attrs);
-                }
-            });
+                refreshExpandState();
+            }
         });
 
-        // 配置 MutationObserver，监听属性变化
-        observer.observe(hljsElement, {
-            attributes: true, // 监听属性变化
-            attributeFilter: ["style"], // 仅监听 style 属性
+        observer.observe(blockElement, {
+            attributes: true,
+            attributeFilter: ["style"],
         });
         styleObserver = observer;
     }
@@ -63,34 +60,32 @@
     });
 
     function handleCodeBlockToggle(event) {
-        if (!codeBlockElement) {
+        const blockElement = getBlockElement();
+        if (!blockElement) {
             return;
         }
         event.stopPropagation();
-        let hljsElement = codeBlockElement.querySelector(
-            "div.hljs",
-        ) as HTMLElement;
 
-        let config = SettingService.ins.SettingConfig;
-        let foldHeight = config.codeBlockFoldHeight;
-        if (isNaN(foldHeight) || foldHeight <= 150) {
-            foldHeight = 150;
-        }
-        if (hljsElement.scrollHeight < foldHeight) {
+        const foldHeight = getCodeBlockFoldHeight();
+        const naturalHeight = getCodeBlockNaturalHeight(blockElement);
+        if (naturalHeight < foldHeight) {
             return;
         }
 
-        // blockExpand = hljsElement.clientHeight >= hljsElement.scrollHeight;
         if (blockExpand) {
-            hljsElement.style.height = foldHeight + "px";
-        } else {
-            hljsElement.style.removeProperty("height");
+            setCodeBlockMaxHeight(blockElement, foldHeight, true);
+            blockExpand = false;
+            return;
         }
-        blockExpand = !blockExpand;
+
+        const globalMaxHeight = getGlobalCodeBlockMaxHeight();
+        if (globalMaxHeight && naturalHeight > globalMaxHeight) {
+            setCodeBlockMaxHeight(blockElement, naturalHeight, true);
+        } else {
+            setCodeBlockMaxHeight(blockElement, null, true);
+        }
+        blockExpand = true;
     }
-    // function handleKeyEventDefault(event) {
-    //     console.log(event.key);
-    // }
 </script>
 
 <button on:click={handleCodeBlockToggle}>

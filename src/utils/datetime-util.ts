@@ -39,6 +39,15 @@ export function formatRelativeTimeInBlock(dateTimeString: string): string {
 }
 
 
+export function formatLocalDateTime(timestamp: number): string {
+    const date = new Date(timestamp);
+    if (Number.isNaN(date.getTime())) {
+        return "";
+    }
+    const pad = (n: number) => n.toString().padStart(2, "0");
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+}
+
 export function formatRelativeTime(timestamp: number): string {
     const now = Date.now();
     const diff = now - timestamp;

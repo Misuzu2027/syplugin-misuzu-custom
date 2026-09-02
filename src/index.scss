@@ -51,8 +51,71 @@ body.misuzu2027.ref-text__brackets .protyle-wysiwyg [data-node-id] span[data-typ
 
 
 /* ---------------------------start 代码块样式 start------------------------------*/
-/* ------------ 代码块限制最大高度 ------------ */
-/* 限制代码块高度，设置超过高度，出现滚动条 */
+/* 全局最大高度：复用官方 3.8.2 容器 max-height 布局，已单独设置高度的块不套用 */
+@mixin misuzu-code-block-max-height-layout {
+    display: flex;
+    flex-direction: column;
+    padding-top: calc(1.7em + 4px);
+    overflow: visible;
+
+    & > .hljs {
+        box-sizing: border-box;
+        flex: 1 1 auto;
+        min-height: 0 !important;
+        max-height: none;
+        padding-top: 0;
+        overflow-y: auto;
+    }
+}
+
+body.misuzu2027.code-block__max-height {
+    .protyle-wysiwyg .code-block[data-type="NodeCodeBlock"]:not(.render-node):not([style*="max-height:"]) {
+        max-height: var(--misuzu-code-block-max-height);
+        @include misuzu-code-block-max-height-layout;
+    }
+
+    .b3-typography pre.code-block:not([style*="max-height:"]) {
+        max-height: var(--misuzu-code-block-max-height);
+        overflow: visible;
+
+        & > .hljs {
+            box-sizing: border-box;
+            max-height: inherit;
+            overflow-y: auto;
+        }
+    }
+}
+
+@media print {
+    body.misuzu2027.code-block__max-height {
+        .protyle-wysiwyg .code-block[data-type="NodeCodeBlock"]:not(.render-node),
+        .b3-typography pre.code-block {
+            max-height: none !important;
+            overflow: visible;
+
+            & > .hljs {
+                max-height: none !important;
+                overflow: visible !important;
+            }
+        }
+
+        .protyle-wysiwyg .code-block[data-type="NodeCodeBlock"]:not(.render-node) {
+            display: block;
+            padding-top: 4px;
+
+            & > .hljs {
+                min-height: 22px !important;
+                padding-top: 2em;
+            }
+        }
+    }
+}
+
+/* ------------ 代码块拖拽条 ------------ */
+body.misuzu2027.code-block__drag-height .protyle-wysiwyg .code-block[data-type="NodeCodeBlock"]:not(.render-node) {
+    position: relative;
+}
+
 body.misuzu2027.code-block__drag-height .protyle-wysiwyg .code-block .drag-bar {
     position: absolute;
     /* 距离容器底部的距离，可以根据需要调整 */
@@ -66,6 +129,7 @@ body.misuzu2027.code-block__drag-height .protyle-wysiwyg .code-block .drag-bar {
     background-color: var(--b3-theme-on-background);
     /* 拖动条背景颜色 */
     cursor: row-resize;
+    z-index: 2;
     /* 圆角，可以根据需要调整 */
     border-radius: 5px;
     // caret-color: transparent;
@@ -103,17 +167,3 @@ body.misuzu2027.code-block__drag-height .protyle-wysiwyg .code-block .drag-bar {
 }
 
 /* ---------------------------end 文件树样式 end------------------------------*/
-
-/* ---------------------------start 侧栏 Dock 样式 start------------------------------*/
-/* 隐藏内置 Dock 图标（参考官方 data-type：outline/inbox/bookmark/tag/graph/globalGraph/backlink） */
-body.misuzu2027.hide-dock-outline .dock span[data-type="outline"],
-body.misuzu2027.hide-dock-inbox .dock span[data-type="inbox"],
-body.misuzu2027.hide-dock-bookmark .dock span[data-type="bookmark"],
-body.misuzu2027.hide-dock-tag .dock span[data-type="tag"],
-body.misuzu2027.hide-dock-graph .dock span[data-type="graph"],
-body.misuzu2027.hide-dock-globalGraph .dock span[data-type="globalGraph"],
-body.misuzu2027.hide-dock-backlink .dock span[data-type="backlink"] {
-    display: none;
-}
-
-/* ---------------------------end 侧栏 Dock 样式 end------------------------------*/

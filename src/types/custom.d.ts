@@ -57,7 +57,6 @@ type IItemPropertyType =
     "button" |
     "textarea" |
     "switch" |
-    "chips" |
     "order" |
     "tips";
 
