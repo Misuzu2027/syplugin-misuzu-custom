@@ -2,7 +2,11 @@
     import { onMount } from "svelte";
     import { showMessage } from "siyuan";
     import { EnvConfig } from "@/config/EnvConfig";
-    import type { ConfBackupSectionKey, SettingBackupListItem, SettingBackupMeta } from "@/models/conf-backup-model";
+    import type {
+        ConfBackupSectionKey,
+        SettingBackupListItem,
+        SettingBackupMeta,
+    } from "@/models/conf-backup-model";
     import { ConfBackupService } from "@/service/ConfBackupService";
     import { formatLocalDateTime } from "@/utils/datetime-util";
     import { confirmDialog } from "@/utils/siyuan-util";
@@ -50,7 +54,11 @@
         busy = true;
         try {
             await service.create(form.name, form.note);
-            showMessage(t("SettingBackupCreateSuccess", "已备份当前设置"), 3000, "info");
+            showMessage(
+                t("SettingBackupCreateSuccess", "已备份当前设置"),
+                3000,
+                "info",
+            );
             await refresh();
         } catch (err) {
             showMessage(String(err), 5000, "error");
@@ -74,7 +82,11 @@
         busy = true;
         try {
             await service.updateMeta(item.id, form.name, form.note);
-            showMessage(t("SettingBackupUpdateSuccess", "已更新备份信息"), 3000, "info");
+            showMessage(
+                t("SettingBackupUpdateSuccess", "已更新备份信息"),
+                3000,
+                "info",
+            );
             await refresh();
         } catch (err) {
             showMessage(String(err), 5000, "error");
@@ -86,22 +98,25 @@
     function onDelete(item: SettingBackupMeta) {
         if (busy) return;
         const tip = document.createElement("div");
-        tip.textContent = t("SettingBackupDeleteConfirm", "确定删除这份备份？删除后无法恢复。");
-        confirmDialog(
-            t("SettingBackupDeleteTitle", "删除备份"),
-            tip,
-            () => {
-                void deleteItem(item);
-                return true;
-            },
+        tip.textContent = t(
+            "SettingBackupDeleteConfirm",
+            "确定删除这份备份？删除后无法恢复。",
         );
+        confirmDialog(t("SettingBackupDeleteTitle", "删除备份"), tip, () => {
+            void deleteItem(item);
+            return true;
+        });
     }
 
     async function deleteItem(item: SettingBackupMeta) {
         busy = true;
         try {
             await service.remove(item.id);
-            showMessage(t("SettingBackupDeleteSuccess", "已删除备份"), 3000, "info");
+            showMessage(
+                t("SettingBackupDeleteSuccess", "已删除备份"),
+                3000,
+                "info",
+            );
             await refresh();
         } catch (err) {
             showMessage(String(err), 5000, "error");
@@ -113,7 +128,9 @@
     async function onRestore(item: SettingBackupMeta) {
         if (busy) return;
         const warnings = [
-            item.compat.level === "compatible" ? "" : service.compatReason(item.compat),
+            item.compat.level === "compatible"
+                ? ""
+                : service.compatReason(item.compat),
             isDifferentDeviceKind(item)
                 ? t(
                       "SettingBackupDeviceMismatch",
@@ -126,15 +143,23 @@
             intro: `${t("SettingBackupRestoreIntro", "将使用以下备份覆盖当前设备上对应的本地设置：")}「${item.name}」`,
             warning: warnings.join("\n"),
             sectionsLabel: t("SettingBackupSelectSections", "选择要还原的设置"),
-            emptySectionMsg: t("SettingBackupSelectSection", "请至少选择一项要还原的设置"),
-            sectionLabel: (key: ConfBackupSectionKey) => service.sectionLabel(key),
+            emptySectionMsg: t(
+                "SettingBackupSelectSection",
+                "请至少选择一项要还原的设置",
+            ),
+            sectionLabel: (key: ConfBackupSectionKey) =>
+                service.sectionLabel(key),
         });
         if (!sections) return;
 
         busy = true;
         try {
             await service.restore(item.id, sections);
-            showMessage(t("SettingBackupRestoreSuccess", "设置已还原"), 3000, "info");
+            showMessage(
+                t("SettingBackupRestoreSuccess", "设置已还原"),
+                3000,
+                "info",
+            );
             askReload();
         } catch (err) {
             showMessage(String(err), 5000, "error");
@@ -185,17 +210,23 @@
     </div>
 
     {#if loading}
-        <div class="mz-conf-backup__empty">{t("SettingBackupLoading", "正在读取备份…")}</div>
+        <div class="mz-conf-backup__empty">
+            {t("SettingBackupLoading", "正在读取备份…")}
+        </div>
     {:else if items.length === 0}
         <div class="mz-conf-backup__empty">
-            {t("SettingBackupEmpty", "还没有备份。点击上方按钮，把当前设备的设置保存下来。")}
+            {t(
+                "SettingBackupEmpty",
+                "还没有备份。点击上方按钮，把当前设备的设置保存下来。",
+            )}
         </div>
     {:else}
         <div class="mz-conf-backup__list">
             {#each items as item (item.id)}
                 <div
                     class="mz-conf-backup__card"
-                    class:mz-conf-backup__card--incompatible={item.compat.level === "incompatible"}
+                    class:mz-conf-backup__card--incompatible={item.compat
+                        .level === "incompatible"}
                 >
                     <div class="mz-conf-backup__card-main">
                         <div class="mz-conf-backup__name-row">
@@ -203,8 +234,10 @@
                             {#if item.compat.level !== "compatible"}
                                 <span
                                     class="mz-conf-backup__badge"
-                                    class:mz-conf-backup__badge--error={item.compat.level === "incompatible"}
-                                    class:mz-conf-backup__badge--warn={item.compat.level === "caution" ||
+                                    class:mz-conf-backup__badge--error={item
+                                        .compat.level === "incompatible"}
+                                    class:mz-conf-backup__badge--warn={item
+                                        .compat.level === "caution" ||
                                         item.compat.level === "unknown"}
                                 >
                                     {service.compatLabel(item.compat.level)}
@@ -220,24 +253,37 @@
                             </div>
                             <div>
                                 <span class="mz-conf-backup__label"
-                                    >{t("SettingBackupDeviceName", "设备名称")}</span
+                                    >{t(
+                                        "SettingBackupDeviceName",
+                                        "设备名称",
+                                    )}</span
                                 >
                                 {item.deviceName}
                             </div>
                             <div>
                                 <span class="mz-conf-backup__label"
-                                    >{t("SettingBackupDeviceModel", "设备型号")}</span
+                                    >{t(
+                                        "SettingBackupDeviceModel",
+                                        "设备型号",
+                                    )}</span
                                 >
                                 {service.deviceModelText(item)}
                             </div>
                             <div>
                                 <span class="mz-conf-backup__label"
-                                    >{t("SettingBackupAppVersion", "版本")}</span
+                                    >{t(
+                                        "SettingBackupAppVersion",
+                                        "版本",
+                                    )}</span
                                 >
                                 {item.appVersion || "-"}
                                 {#if service.currentAppVersion() && item.appVersion !== service.currentAppVersion()}
                                     <span class="mz-conf-backup__current-ver">
-                                        ({t("SettingBackupCurrentVersion", "当前")} {service.currentAppVersion()})
+                                        ({t(
+                                            "SettingBackupCurrentVersion",
+                                            "当前",
+                                        )}
+                                        {service.currentAppVersion()})
                                     </span>
                                 {/if}
                             </div>
@@ -248,9 +294,9 @@
                             {/if}
                             {#if item.note}
                                 <div>
-                                    <span class="mz-conf-backup__label"
-                                        >{t("SettingBackupNote", "备注")}</span
-                                    >
+                                    <span class="mz-conf-backup__label">
+                                        {t("SettingBackupNote", "备注")}
+                                    </span>
                                     {item.note}
                                 </div>
                             {/if}

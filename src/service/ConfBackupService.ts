@@ -246,9 +246,11 @@ export class ConfBackupService {
             appearance: this.text("SettingBackupSectionAppearance", "外观"),
             editor: this.text("SettingBackupSectionEditor", "编辑器"),
             fileTree: this.text("SettingBackupSectionFileTree", "文档树"),
+            tag: this.text("SettingBackupSectionTag", "标签"),
             search: this.text("SettingBackupSectionSearch", "搜索"),
             export: this.text("SettingBackupSectionExport", "导出"),
             flashcard: this.text("SettingBackupSectionFlashcard", "闪卡"),
+            graph: this.text("SettingBackupSectionGraph", "关系图"),
             bazaar: this.text("SettingBackupSectionBazaar", "集市"),
             snippet: this.text("SettingBackupSectionSnippet", "代码片段开关"),
             uiLayout: this.text("SettingBackupSectionLayout", "界面布局"),
@@ -303,10 +305,11 @@ export class ConfBackupService {
     }
 
     private async collectSanitizedConf(): Promise<Record<string, any>> {
-        let conf = await getSystemConf();
-        if (!conf || typeof conf !== "object") {
-            conf = window.siyuan?.config;
-        }
+        const data = await getSystemConf();
+        const conf =
+            data && typeof data === "object" && data.conf && typeof data.conf === "object"
+                ? data.conf
+                : window.siyuan?.config;
         if (!conf || typeof conf !== "object") {
             throw new Error(this.text("SettingBackupReadFailed", "读取当前设置失败"));
         }
@@ -363,6 +366,13 @@ export class ConfBackupService {
                 return this.postOk("/api/setting/setEditor", this.overlayBackupOnCurrent(current.editor, payload));
             case "fileTree":
                 return this.postOk("/api/setting/setFiletree", this.overlayBackupOnCurrent(current.fileTree, payload));
+            case "tag": {
+                const sort = this.overlayBackupOnCurrent(current.tag, payload)?.sort;
+                if (typeof sort !== "number") {
+                    return { ok: true, msg: "" };
+                }
+                return this.postOk("/api/tag/getTag", { sort });
+            }
             case "search":
                 return this.postOk("/api/setting/setSearch", this.overlayBackupOnCurrent(current.search, payload));
             case "export": {
@@ -374,6 +384,8 @@ export class ConfBackupService {
             }
             case "flashcard":
                 return this.postOk("/api/setting/setFlashcard", this.overlayBackupOnCurrent(current.flashcard, payload));
+            case "graph":
+                return this.restoreGraph(this.overlayBackupOnCurrent(current.graph, payload));
             case "bazaar":
                 return this.postOk("/api/setting/setBazaar", this.overlayBackupOnCurrent(current.bazaar, payload));
             case "snippet":
@@ -383,6 +395,20 @@ export class ConfBackupService {
             default:
                 return { ok: true, msg: "" };
         }
+    }
+
+    private async restoreGraph(graph: any): Promise<{ ok: boolean; msg: string }> {
+        for (const type of ["local", "global"] as const) {
+            const conf = graph?.[type];
+            if (!conf || typeof conf !== "object") {
+                continue;
+            }
+            const result = await this.postOk("/api/graph/setGraphConf", { type, conf });
+            if (!result.ok) {
+                return result;
+            }
+        }
+        return { ok: true, msg: "" };
     }
 
     private overlayBackupOnCurrent(current: any, backup: any): any {

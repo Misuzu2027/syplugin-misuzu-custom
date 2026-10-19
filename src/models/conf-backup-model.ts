@@ -10,9 +10,11 @@ export type ConfBackupSectionKey =
     | "appearance"
     | "editor"
     | "fileTree"
+    | "tag"
     | "search"
     | "export"
     | "flashcard"
+    | "graph"
     | "bazaar"
     | "snippet"
     | "uiLayout";
@@ -56,9 +58,11 @@ export const CONF_BACKUP_SECTIONS: ConfBackupSectionKey[] = [
     "appearance",
     "editor",
     "fileTree",
+    "tag",
     "search",
     "export",
     "flashcard",
+    "graph",
     "bazaar",
     "snippet",
     "uiLayout",
@@ -69,7 +73,9 @@ export const DEFAULT_RESTORE_SECTIONS: ConfBackupSectionKey[] = [
     "appearance",
     "editor",
     "fileTree",
+    "tag",
     "search",
     "export",
     "flashcard",
+    "graph",
 ];

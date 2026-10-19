@@ -9,43 +9,51 @@
 }
 
 /* 引用文本样式 */
-body.misuzu2027.ref-text__brackets .protyle-wysiwyg [data-node-id] span[data-type*="block-ref"]:not([data-type="virtual-block-ref"]):not([data-type*="sup"]):not([data-type*="sub"]):not(.av__celltext--ref) {
-    font-weight: inherit;
-    background-color: transparent;
-    border-bottom: none;
-    color: var(--b3-theme-primary)
-}
+body.misuzu2027.ref-text__brackets {
+    .protyle-wysiwyg,
+    .table__cell-rich,
+    .mindmap-view__content {
+        span[data-type~="block-ref"]:not(.av__celltext) {
+            font-weight: inherit;
+            background-color: transparent;
+            background-image: none;
+            padding-bottom: 0;
+            border-bottom: none;
+            -webkit-box-decoration-break: initial;
+            box-decoration-break: initial;
+            color: var(--b3-theme-primary);
 
-body.misuzu2027.ref-text__brackets .protyle-wysiwyg [data-node-id] span[data-type*="block-ref"]::before {
-    content: "[[";
-    color: var(--b3-theme-on-surface);
-    display: inline-block;
-    text-align: center;
-    margin: 0 0 0 0.125em;
-    padding: 0;
-    position: inherit;
-    font-size: 1em;
-}
+            &::before {
+                content: "[[";
+                color: var(--b3-theme-on-surface);
+                display: inline-block;
+                text-align: center;
+                margin: 0 0 0 0.125em;
+                padding: 0;
+                position: inherit;
+                font-size: 1em;
+            }
 
+            &::after {
+                content: "]]";
+                color: var(--b3-theme-on-surface);
+                display: inline-block;
+                text-align: center;
+                margin: 0 0.125em 0 0;
+                padding: 0;
+                position: inherit;
+                font-size: 1em;
+            }
 
-body.misuzu2027.ref-text__brackets .protyle-wysiwyg [data-node-id] span[data-type*="block-ref"]::after {
-    content: "]]";
-    color: var(--b3-theme-on-surface);
-    display: inline-block;
-    text-align: center;
-    margin: 0 0.125em 0 0;
-    padding: 0;
-    position: inherit;
-    font-size: 1em;
-}
+            &[data-subtype="s"]::before {
+                content: "[";
+            }
 
-/* 块引用 静态*/
-body.misuzu2027.ref-text__brackets .protyle-wysiwyg [data-node-id] span[data-type*="block-ref"][data-subtype="s"]::before {
-    content: "[";
-}
-
-body.misuzu2027.ref-text__brackets .protyle-wysiwyg [data-node-id] span[data-type*="block-ref"][data-subtype="s"]::after {
-    content: "]";
+            &[data-subtype="s"]::after {
+                content: "]";
+            }
+        }
+    }
 }
 
 
