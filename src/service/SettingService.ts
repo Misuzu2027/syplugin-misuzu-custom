@@ -9,6 +9,7 @@ import { CodeBlockService } from "@/components/code-block/CodeBlockService";
 import { FileTreeService } from "@/components/filetree/FileTreeService";
 import { ImageScalingService } from "@/components/img/ImageScalingService";
 import { ProtyleWysiwygService } from "@/components/protyle-wysiwyg/ProtyleWysiwyg";
+import { AttachmentChipService } from "@/components/attachment/AttachmentChipService";
 
 const SettingFileName = 'misuzu2027-setting.json';
 
@@ -79,6 +80,7 @@ export class SettingService {
         FileTreeService.ins.init();
         ImageScalingService.ins.init();
         ProtyleWysiwygService.ins.init();
+        AttachmentChipService.ins.init();
     }
 
 }

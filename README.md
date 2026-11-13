@@ -13,3 +13,7 @@ If you like a feature, feel free to extract it into your own plugin.
 * Document tree
   * Filter notebooks by keyword
   * Also match sub-documents under a notebook when filtering
+* Attachment chips
+  * Show asset links as inline chips with type and file size
+  * File sizes are cached in memory (10 minutes by default) to avoid repeated requests
+  * Category-based colors that adapt to dark themes

@@ -86,5 +86,14 @@
     "SettingBackupCompatMajorMismatch": "备份与当前思源主版本不同，设置结构可能对不上。",
     "SettingBackupCompatNewer": "这份备份来自更新的思源，当前版本可能无法正确识别其中的设置。",
     "SettingBackupCompatNewerPatch": "这份备份来自稍新的修订版，一般可用，仍建议先确认。",
-    "SettingBackupCompatOlder": "这份备份来自较旧的思源，部分新设置会保留当前值。"
+    "SettingBackupCompatOlder": "这份备份来自较旧的思源，部分新设置会保留当前值。",
+    "Attachment": "附件",
+    "AttachmentChip": "附件胶囊样式",
+    "AttachmentChipDesc": "把普通的资源文件链接显示为带类型和文件大小的胶囊，点击行为保持不变",
+    "AttachmentChipShowSize": "显示文件大小",
+    "AttachmentChipShowSizeDesc": "附件进入视口附近时读取信息，之后使用内存缓存，不会重复请求",
+    "AttachmentChipShowTime": "显示修改时间",
+    "AttachmentChipShowTimeDesc": "在文件大小后追加修改日期，胶囊会更长",
+    "AttachmentChipCacheMinutes": "附件信息缓存时间（分钟）",
+    "AttachmentChipCacheMinutesDesc": "只缓存在内存中，关闭开关或重启后自动清空；填 0 表示不缓存，每次打开文档重新获取"
 }

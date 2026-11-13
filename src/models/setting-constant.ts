@@ -18,6 +18,11 @@ export function getDefaultSettingConfig() {
     defaultConfig.imageMiddleClickResizeWidth = null;
     defaultConfig.topBarShowImageZoomBtn = false;
 
+    defaultConfig.attachmentChip = true;
+    defaultConfig.attachmentChipShowSize = true;
+    defaultConfig.attachmentChipShowTime = false;
+    defaultConfig.attachmentChipCacheMinutes = 10;
+
     defaultConfig.protyleWysiwygMiddleClickToggle = false;
 
     return defaultConfig;
@@ -78,6 +83,14 @@ export function getSettingTabArray(): TabProperty[] {
                 // new ItemProperty({ key: "cacheExpirationTime", type: "number", name: "缓存过期时间（秒）", description: "", tips: "缓存数据失效时间", min: -1, }),
                 // new ConfigProperty({ key: "usePraentIdIdx", type: "switch", name: "使用索引", description: "", tips: "" }),
 
+            ]
+        }),
+        new TabProperty({
+            key: "attachment-setting", name: i18n.Attachment, iconKey: "iconLink", props: [
+                new ItemProperty({ key: "attachmentChip", type: "switch", name: i18n.AttachmentChip, description: i18n.AttachmentChipDesc, tips: "" }),
+                new ItemProperty({ key: "attachmentChipShowSize", type: "switch", name: i18n.AttachmentChipShowSize, description: i18n.AttachmentChipShowSizeDesc, tips: "" }),
+                new ItemProperty({ key: "attachmentChipShowTime", type: "switch", name: i18n.AttachmentChipShowTime, description: i18n.AttachmentChipShowTimeDesc, tips: "" }),
+                new ItemProperty({ key: "attachmentChipCacheMinutes", type: "number", name: i18n.AttachmentChipCacheMinutes, description: i18n.AttachmentChipCacheMinutesDesc, tips: "", min: 0 }),
             ]
         }),
         new TabProperty({

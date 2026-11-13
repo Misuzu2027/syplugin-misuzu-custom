@@ -13,6 +13,10 @@ export const CUSTOM_CSS_CLASS_MAP: { [key: string]: { name: string, describe: st
         name: "code-block__drag-height",
         describe: "代码块拖拽高度",
     },
+    attachmentChipClass: {
+        name: "attachment-chip",
+        describe: "附件胶囊样式",
+    },
 }
     ;
 

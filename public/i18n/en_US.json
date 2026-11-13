@@ -86,5 +86,14 @@
     "SettingBackupCompatMajorMismatch": "This backup is from a different SiYuan major version. Settings may not match.",
     "SettingBackupCompatNewer": "This backup is from a newer SiYuan. The current version may not understand some settings.",
     "SettingBackupCompatNewerPatch": "This backup is from a slightly newer patch. It should work, but confirm first.",
-    "SettingBackupCompatOlder": "This backup is from an older SiYuan. Newer settings on this device will be kept."
+    "SettingBackupCompatOlder": "This backup is from an older SiYuan. Newer settings on this device will be kept.",
+    "Attachment": "Attachments",
+    "AttachmentChip": "Attachment chip style",
+    "AttachmentChipDesc": "Show asset links as chips with file type and size. Click behavior is unchanged.",
+    "AttachmentChipShowSize": "Show file size",
+    "AttachmentChipShowSizeDesc": "Read attachment info as it enters the viewport, then reuse the in-memory cache instead of requesting again.",
+    "AttachmentChipShowTime": "Show modified time",
+    "AttachmentChipShowTimeDesc": "Append the modified date after the file size. Chips get longer.",
+    "AttachmentChipCacheMinutes": "Attachment info cache (minutes)",
+    "AttachmentChipCacheMinutesDesc": "Kept in memory only and cleared when disabled or restarted. Set to 0 to disable caching and re-read every time a document opens."
 }

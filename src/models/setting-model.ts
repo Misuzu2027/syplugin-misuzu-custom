@@ -22,6 +22,12 @@ export class SettingConfig {
     imageMiddleClickResizeWidth: string;
     topBarShowImageZoomBtn: boolean;
 
+    // 附件
+    attachmentChip: boolean;
+    attachmentChipShowSize: boolean;
+    attachmentChipShowTime: boolean;
+    attachmentChipCacheMinutes: number;
+
     // 编辑器相关
     protyleWysiwygMiddleClickToggle: boolean;
 

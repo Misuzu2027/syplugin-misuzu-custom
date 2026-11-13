@@ -13,6 +13,7 @@ import { CodeBlockService } from "./components/code-block/CodeBlockService";
 import { FileTreeService } from "./components/filetree/FileTreeService";
 import { ImageScalingService } from "./components/img/ImageScalingService";
 import { ProtyleWysiwygService } from "./components/protyle-wysiwyg/ProtyleWysiwyg";
+import { AttachmentChipService } from "./components/attachment/AttachmentChipService";
 
 
 export default class Misuzu2027Plugin extends Plugin {
@@ -27,6 +28,7 @@ export default class Misuzu2027Plugin extends Plugin {
         FileTreeService.ins.init();
         ImageScalingService.ins.init();
         ProtyleWysiwygService.ins.init();
+        AttachmentChipService.ins.init();
 
 
         // 图标的制作参见帮助文档
@@ -46,6 +48,7 @@ export default class Misuzu2027Plugin extends Plugin {
     async onunload() {
         CodeBlockService.ins.destroy();
         FileTreeService.ins.destroy();
+        AttachmentChipService.ins.destroy();
         ProtyleWysiwygService.ins.destroy();
         ImageScalingService.ins.destroy();
         CssService.ins.destroy();

@@ -42,6 +42,9 @@ export class CssService {
         if (settingConfig.codeBlockAdjustHeight) {
             bodyElement.classList.add(CUSTOM_CSS_CLASS_MAP.codeBlockDragHeightClass.name);
         }
+        if (settingConfig.attachmentChip) {
+            bodyElement.classList.add(CUSTOM_CSS_CLASS_MAP.attachmentChipClass.name);
+        }
     }
 
     public destroy() {

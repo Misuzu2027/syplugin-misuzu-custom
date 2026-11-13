@@ -175,3 +175,154 @@ body.misuzu2027.code-block__drag-height .protyle-wysiwyg .code-block .drag-bar {
 }
 
 /* ---------------------------end 文件树样式 end------------------------------*/
+
+/* ---------------------------start 附件胶囊样式 start------------------------------*/
+/* 只处理普通资源链接：<span data-type="a" data-href="assets/xxx">xxx</span> */
+body.misuzu2027.attachment-chip {
+    --misuzu-attach-color: var(--b3-theme-primary);
+
+    .protyle-wysiwyg span[data-type~="a"][data-href^="assets/"]:not(.av__celltext),
+    .protyle-wysiwyg span[data-type~="a"][data-href^="/assets/"]:not(.av__celltext) {
+        display: inline-block;
+        box-sizing: border-box;
+        max-width: 100%;
+        padding: 0 0.55em;
+        margin: 0 0.1em;
+        line-height: 1.6;
+        border: 1px solid color-mix(in srgb, var(--misuzu-attach-color) 22%, var(--b3-border-color));
+        border-radius: 6px;
+        background-color: color-mix(in srgb, var(--misuzu-attach-color) 5%, var(--b3-theme-surface));
+        color: var(--b3-theme-on-background);
+        font-size: 1em;
+        line-height: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-decoration: none;
+        vertical-align: -0.28em;
+        transition: background-color 0.15s ease, border-color 0.15s ease;
+
+        /* 有类型标签时给左侧留出一点空间 */
+        &[data-misuzu-attach-tag] {
+            padding-left: 0.22em;
+        }
+
+        /* 类型缩写徽标，内容来自 JS 写入的 data 属性 */
+        &[data-misuzu-attach-tag]::before {
+            content: attr(data-misuzu-attach-tag);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 2.2em;
+            height: 1.45em;
+            margin-right: 0.35em;
+            padding: 0 0.3em;
+            vertical-align: middle;
+            border-radius: 4px;
+            background-color: color-mix(in srgb, var(--misuzu-attach-color) 13%, transparent);
+            color: var(--misuzu-attach-color);
+            font-family: var(--b3-font-family-code, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+            font-size: 0.72em;
+            font-style: normal;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            line-height: 1;
+        }
+
+        /* 文件大小 / 修改时间 */
+        &[data-misuzu-attach-meta="both"]::after,
+        &[data-misuzu-attach-meta="size"]::after {
+            display: inline-block;
+            margin-left: 0.35em;
+            vertical-align: baseline;
+            color: var(--b3-theme-on-surface);
+            font-size: 0.82em;
+            font-style: normal;
+            font-weight: 400;
+            font-variant-numeric: tabular-nums;
+        }
+
+        &[data-misuzu-attach-meta="both"]::after {
+            content: attr(data-misuzu-attach-size) " · " attr(data-misuzu-attach-date);
+        }
+
+        &[data-misuzu-attach-meta="size"]::after {
+            content: attr(data-misuzu-attach-size);
+        }
+
+        &[data-misuzu-attach-missing="1"] {
+            opacity: 0.6;
+            border-style: dashed;
+        }
+
+        &[data-misuzu-attach-missing="1"]::after {
+            color: var(--b3-theme-error, var(--b3-theme-on-surface));
+        }
+
+        &:hover {
+            background-color: color-mix(in srgb, var(--misuzu-attach-color) 10%, var(--b3-theme-surface));
+            border-color: color-mix(in srgb, var(--misuzu-attach-color) 40%, var(--b3-border-color));
+        }
+
+        /* 分类配色：PDF/Word/Excel/PPT 使用大众认知色，其余按大类区分 */
+        &[data-misuzu-attach-type="pdf"]        { --misuzu-attach-color: #e5484d; }
+        &[data-misuzu-attach-type="word"]       { --misuzu-attach-color: #2b579a; }
+        &[data-misuzu-attach-type="excel"]      { --misuzu-attach-color: #217346; }
+        &[data-misuzu-attach-type="ppt"]        { --misuzu-attach-color: #c43e1c; }
+        &[data-misuzu-attach-type="archive"]    { --misuzu-attach-color: #b45309; }
+        &[data-misuzu-attach-type="executable"] { --misuzu-attach-color: #475569; }
+        &[data-misuzu-attach-type="audio"]      { --misuzu-attach-color: #0891b2; }
+        &[data-misuzu-attach-type="video"]      { --misuzu-attach-color: #db2777; }
+        &[data-misuzu-attach-type="image"]      { --misuzu-attach-color: #8b5cf6; }
+        &[data-misuzu-attach-type="design"]     { --misuzu-attach-color: #9333ea; }
+        &[data-misuzu-attach-type="code"]       { --misuzu-attach-color: #0f766e; }
+        &[data-misuzu-attach-type="text"]       { --misuzu-attach-color: #64748b; }
+        &[data-misuzu-attach-type="font"]       { --misuzu-attach-color: #4f46e5; }
+        &[data-misuzu-attach-type="unknown"]    { --misuzu-attach-color: #6b7280; }
+
+        /* 深色主题下提亮，保证徽标文字对比度 */
+        :root[data-theme-mode="dark"] &[data-misuzu-attach-type="pdf"]        { --misuzu-attach-color: #ff6b6f; }
+        :root[data-theme-mode="dark"] &[data-misuzu-attach-type="word"]       { --misuzu-attach-color: #6ea8ff; }
+        :root[data-theme-mode="dark"] &[data-misuzu-attach-type="excel"]      { --misuzu-attach-color: #4ade80; }
+        :root[data-theme-mode="dark"] &[data-misuzu-attach-type="ppt"]        { --misuzu-attach-color: #ff8a65; }
+        :root[data-theme-mode="dark"] &[data-misuzu-attach-type="archive"]    { --misuzu-attach-color: #f59e0b; }
+        :root[data-theme-mode="dark"] &[data-misuzu-attach-type="executable"] { --misuzu-attach-color: #94a3b8; }
+        :root[data-theme-mode="dark"] &[data-misuzu-attach-type="audio"]      { --misuzu-attach-color: #22d3ee; }
+        :root[data-theme-mode="dark"] &[data-misuzu-attach-type="video"]      { --misuzu-attach-color: #f472b6; }
+        :root[data-theme-mode="dark"] &[data-misuzu-attach-type="image"]      { --misuzu-attach-color: #a78bfa; }
+        :root[data-theme-mode="dark"] &[data-misuzu-attach-type="design"]     { --misuzu-attach-color: #c084fc; }
+        :root[data-theme-mode="dark"] &[data-misuzu-attach-type="code"]       { --misuzu-attach-color: #2dd4bf; }
+        :root[data-theme-mode="dark"] &[data-misuzu-attach-type="text"]       { --misuzu-attach-color: #94a3b8; }
+        :root[data-theme-mode="dark"] &[data-misuzu-attach-type="font"]       { --misuzu-attach-color: #818cf8; }
+        :root[data-theme-mode="dark"] &[data-misuzu-attach-type="unknown"]    { --misuzu-attach-color: #9ca3af; }
+    }
+
+    /* 单元格里只有附件时，让胶囊铺满单元格并参与列宽收缩。
+       否则 nowrap 文件名会锁住表格列的最小宽度，拖到一半就停住。 */
+    .protyle-wysiwyg table td span[data-type~="a"][data-href^="assets/"][data-misuzu-attach-fill="1"],
+    .protyle-wysiwyg table td span[data-type~="a"][data-href^="/assets/"][data-misuzu-attach-fill="1"],
+    .protyle-wysiwyg table th span[data-type~="a"][data-href^="assets/"][data-misuzu-attach-fill="1"],
+    .protyle-wysiwyg table th span[data-type~="a"][data-href^="/assets/"][data-misuzu-attach-fill="1"] {
+        width: 100%;
+        contain: inline-size;
+    }
+}
+
+@media print {
+    body.misuzu2027.attachment-chip {
+        .protyle-wysiwyg span[data-type~="a"][data-href^="assets/"],
+        .protyle-wysiwyg span[data-type~="a"][data-href^="/assets/"] {
+            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+        }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body.misuzu2027.attachment-chip .protyle-wysiwyg span[data-type~="a"][data-href^="assets/"],
+    body.misuzu2027.attachment-chip .protyle-wysiwyg span[data-type~="a"][data-href^="/assets/"] {
+        transition: none;
+    }
+}
+
+/* ---------------------------end 附件胶囊样式 end------------------------------*/
